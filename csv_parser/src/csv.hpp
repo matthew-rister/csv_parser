@@ -25,7 +25,7 @@ namespace csv {
 
 			entries_.reserve(size);
 
-			std::transform(begin, lines.end(), std::back_inserter(entries_.begin()), [](const auto& line) {
+			std::transform(begin, lines.end(), std::back_inserter(entries_), [](const auto& line) {
 				return read_line(line);
 			});
 		}
