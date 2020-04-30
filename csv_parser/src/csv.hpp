@@ -14,18 +14,18 @@ namespace csv {
 		explicit Csv(const std::string& data, const bool has_row_header = false) {
 
 			const auto lines = read_lines(data);
-			auto begin = lines.begin();
-			auto size = lines.size();
+			auto lines_begin = std::cbegin(lines);
+			auto lines_size = lines.size();
 
-			if (has_row_header && begin != lines.end()) {
+			if (has_row_header && lines_begin != std::cend(lines)) {
 				row_header_ = read_line<std::string>(lines[0]);
-				++begin;
-				--size;
+				++lines_begin;
+				--lines_size;
 			}
 
-			entries_.reserve(size);
+			entries_.reserve(lines_size);
 
-			std::transform(begin, lines.end(), std::back_inserter(entries_), [](const auto& line) {
+			std::transform(lines_begin, std::cend(lines), std::back_inserter(entries_), [](const auto& line) {
 				return read_line(line);
 			});
 		}
