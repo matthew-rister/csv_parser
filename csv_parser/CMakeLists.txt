@@ -10,3 +10,5 @@ endif()
 include_directories("${CMAKE_SOURCE_DIR}/extern")
 
 add_executable (csv_parser  "main.cpp" "src/csv_parser.cpp")
+
+set_property(TARGET csv_parser PROPERTY CXX_STANDARD 17)
