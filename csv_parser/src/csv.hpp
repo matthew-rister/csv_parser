@@ -1,29 +1,17 @@
 #pragma once
 
 #include <sstream>
+#include <string>
 #include <vector>
 
 namespace csv {
 
-	template <typename T>
-	class Csv {
+	template <typename T> class Csv {
 
 	public:
 		explicit Csv(const std::string& data) {
-			std::string line;
-			std::istringstream line_stream{data};
-
-			while (std::getline(line_stream, line)) {
-				entries_.emplace_back(std::vector<T>{});
-				std::string token;
-				std::istringstream token_stream{line};
-
-				while (std::getline(token_stream, token, ',')) {
-					T t;
-					std::istringstream conversion_stream{token};
-					conversion_stream >> t;
-					entries_.back().push_back(t);
-				}
+			for (const auto& line : read_lines(data)) {
+				entries_.push_back(read_line(line));
 			}
 		}
 
@@ -41,6 +29,37 @@ namespace csv {
 		}
 
 	private:
+		static std::vector<std::string> read_lines(const std::string& data) {
+			std::vector<std::string> lines;
+			std::string line;
+			std::istringstream iss{data};
+
+			while (std::getline(iss, line)) {
+				lines.push_back(std::move(line));
+			}
+
+			return lines;
+		}
+
+
+		static std::vector<T> read_line(const std::string& line) {
+			std::vector<T> tokens;
+			std::string token;
+			std::istringstream iss{line};
+
+			while (std::getline(iss, token, ',')) {
+				T t;
+				std::istringstream{token} >> t;
+				if constexpr (std::is_move_assignable<T>::value) {
+					tokens.push_back(std::move(t));
+				} else {
+					tokens.push_back(t);
+				}
+			}
+
+			return tokens;
+		}
+
 		std::vector<std::vector<T>> entries_;
 	};
 }
