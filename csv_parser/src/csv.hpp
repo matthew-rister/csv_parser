@@ -12,15 +12,10 @@ namespace csv {
 
 	public:
 		explicit Csv(const std::string& data) {
-			const auto lines = split(data, '\n');
-			entries_.reserve(lines.size());
-
-			for (const auto& line : lines) {
-				const auto tokens = split(line, ',');
+			for (const auto& line : split(data, '\n')) {
 				entries_.emplace_back();
-				entries_.back().reserve(tokens.size());
 
-				for (const auto& token : tokens) {
+				for (const auto& token : split(line, ',')) {
 					const auto value = parse(token);
 
 					if constexpr (std::is_move_assignable<T>::value) {
