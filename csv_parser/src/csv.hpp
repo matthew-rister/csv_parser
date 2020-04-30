@@ -12,11 +12,11 @@ namespace csv {
 
 	public:
 		explicit Csv(const std::string& data) {
-			const auto lines = get_lines(data);
+			const auto lines = split(data, '\n');
 			entries_.reserve(lines.size());
 
 			for (auto line_iterator = std::cbegin(lines); line_iterator != std::cend(lines); ++line_iterator) {
-				const auto tokens = get_tokens(*line_iterator);
+				const auto tokens = split(*line_iterator, ',');
 				entries_.emplace_back();
 				entries_.back().reserve(tokens.size());
 
@@ -55,26 +55,15 @@ namespace csv {
 		}
 
 	private:
-		static std::vector<std::string> get_lines(const std::string& data) {
+		static std::vector<std::string> split(const std::string& data, const char delimiter) {
 			std::vector<std::string> lines;
 			std::istringstream iss{data};
 
-			for (std::string line; std::getline(iss, line);) {
+			for (std::string line; std::getline(iss, line, delimiter);) {
 				lines.push_back(std::move(line));
 			}
 
 			return lines;
-		}
-
-		static std::vector<std::string> get_tokens(const std::string& line) {
-			std::vector<std::string> tokens;
-			std::istringstream iss{line};
-
-			for (std::string token; std::getline(iss, token, ',');) {
-				tokens.push_back(std::move(token));
-			}
-
-			return tokens;
 		}
 
 		static T parse_token(const std::string& token) {
