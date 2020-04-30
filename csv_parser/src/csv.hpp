@@ -31,23 +31,20 @@ namespace csv {
 	private:
 		static std::vector<std::string> read_lines(const std::string& data) {
 			std::vector<std::string> lines;
-			std::string line;
 			std::istringstream iss{data};
 
-			while (std::getline(iss, line)) {
+			for (std::string line; std::getline(iss, line);) {
 				lines.push_back(std::move(line));
 			}
 
 			return lines;
 		}
 
-
 		static std::vector<T> read_line(const std::string& line) {
 			std::vector<T> tokens;
-			std::string token;
 			std::istringstream iss{line};
 
-			while (std::getline(iss, token, ',')) {
+			for (std::string token; std::getline(iss, token, ',');) {
 				T t;
 				std::istringstream{token} >> t;
 				if constexpr (std::is_move_assignable<T>::value) {
