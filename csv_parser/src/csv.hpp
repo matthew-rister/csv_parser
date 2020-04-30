@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <execution>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -14,13 +15,17 @@ namespace csv {
 
 			const auto lines = read_lines(data);
 			auto begin = lines.begin();
+			auto size = lines.size();
 
 			if (has_row_header && begin != lines.end()) {
 				row_header_ = read_line<std::string>(lines[0]);
 				++begin;
+				--size;
 			}
 
-			std::transform(begin, lines.end(), std::back_inserter(entries_), [](const auto& line) {
+			entries_.reserve(size);
+
+			std::transform(begin, lines.end(), std::back_inserter(entries_.begin()), [](const auto& line) {
 				return read_line(line);
 			});
 		}
