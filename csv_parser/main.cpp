@@ -1,6 +1,3 @@
+#define CATCH_CONFIG_MAIN
 
-#include <cstdlib>
-
-int main() {
-	return EXIT_SUCCESS;
-}
+#include "catch.hpp"
