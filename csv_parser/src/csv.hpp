@@ -42,9 +42,9 @@ namespace csv {
 			std::vector<std::string> tokens;
 			std::istringstream iss{line};
 
-			for (std::string token; std::getline(iss, token, delimiter);) {
-				tokens.push_back(std::move(token));
-			}
+			for (std::string token;
+				std::getline(iss, token, delimiter);
+				tokens.push_back(std::move(token))) {}
 
 			return tokens;
 		}
