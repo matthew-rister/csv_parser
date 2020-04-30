@@ -69,8 +69,7 @@ namespace csv {
 			std::istringstream iss{line};
 
 			for (std::string token; std::getline(iss, token, ',');) {
-				U u;
-				std::istringstream{token} >> u;
+				const auto u = read_token<U>(token);
 				if constexpr (std::is_move_assignable<U>::value) {
 					tokens.push_back(std::move(u));
 				} else {
@@ -79,6 +78,12 @@ namespace csv {
 			}
 
 			return tokens;
+		}
+
+		template <typename U = T> static U read_token(const std::string& token) {
+			U u;
+			std::istringstream{token} >> u;
+			return u;
 		}
 
 		std::vector<std::string> row_header_;
