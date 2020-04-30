@@ -12,8 +12,8 @@ using namespace csv;
 int main() {
 
 	try {
-		const std::string data{", a, b, c\nx, 1, 2, 3\ny, 4, 5, 6\nz, 7, 8, 9"};
-		const Csv<uint8_t> csv{data, true, true};
+		const std::string data{"1, 2, 3\n4, 5, 6\n7, 8, 9"};
+		const Csv<uint8_t> csv{data};
 		std::cout << csv << std::endl;
 	} catch(...) {
 		return EXIT_FAILURE;
