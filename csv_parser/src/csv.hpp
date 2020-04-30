@@ -11,23 +11,25 @@ namespace csv {
 	template <typename T> class Csv {
 
 	public:
-		explicit Csv(const std::string& data, const bool has_row_header = false) {
+		explicit Csv(const std::string& data) {
+			const auto lines = get_lines(data);
+			entries_.reserve(lines.size());
 
-			const auto lines = read_lines(data);
-			auto lines_begin = std::cbegin(lines);
-			auto lines_size = lines.size();
+			for (auto line_iterator = std::cbegin(lines); line_iterator != std::cend(lines); ++line_iterator) {
+				const auto tokens = get_tokens(*line_iterator);
+				entries_.emplace_back();
+				entries_.back().reserve(tokens.size());
 
-			if (has_row_header && lines_begin != std::cend(lines)) {
-				row_header_ = read_line<std::string>(lines[0]);
-				++lines_begin;
-				--lines_size;
+				for (auto tokens_iterator = std::cbegin(tokens); tokens_iterator != std::cend(tokens); ++tokens_iterator) {
+					const auto value = parse_token(*tokens_iterator);
+
+					if constexpr (std::is_move_assignable<T>::value) {
+						entries_.back().push_back(std::move(value));
+					} else {
+						entries_.back().push_back(value);
+					}
+				}
 			}
-
-			entries_.reserve(lines_size);
-
-			std::transform(lines_begin, std::cend(lines), std::back_inserter(entries_), [](const auto& line) {
-				return read_line(line);
-			});
 		}
 
 		friend std::ostream& operator<<(std::ostream& os, const Csv& csv) {
@@ -53,7 +55,7 @@ namespace csv {
 		}
 
 	private:
-		static std::vector<std::string> read_lines(const std::string& data) {
+		static std::vector<std::string> get_lines(const std::string& data) {
 			std::vector<std::string> lines;
 			std::istringstream iss{data};
 
@@ -64,26 +66,21 @@ namespace csv {
 			return lines;
 		}
 
-		template <typename U = T> static std::vector<U> read_line(const std::string& line) {
-			std::vector<U> tokens;
+		static std::vector<std::string> get_tokens(const std::string& line) {
+			std::vector<std::string> tokens;
 			std::istringstream iss{line};
 
 			for (std::string token; std::getline(iss, token, ',');) {
-				const auto u = read_token<U>(token);
-				if constexpr (std::is_move_assignable<U>::value) {
-					tokens.push_back(std::move(u));
-				} else {
-					tokens.push_back(u);
-				}
+				tokens.push_back(std::move(token));
 			}
 
 			return tokens;
 		}
 
-		template <typename U = T> static U read_token(const std::string& token) {
-			U u;
-			std::istringstream{token} >> u;
-			return u;
+		static T parse_token(const std::string& token) {
+			T t;
+			std::istringstream{token} >> t;
+			return t;
 		}
 
 		std::vector<std::string> row_header_;
