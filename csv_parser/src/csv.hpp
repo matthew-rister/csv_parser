@@ -15,14 +15,13 @@ namespace csv {
 		friend std::ostream& operator<<(std::ostream& os, const Csv& csv) {
 
 			if constexpr (sizeof...(ColumnTypes) > 0) {
-				for (const auto& row : csv.entries_) {
-					std::apply(
-						[&os](const auto& item, const auto&... items) {
-							os << item;
-							((os << ", " << items), ...);
-						}, row);
+				std::for_each(std::cbegin(csv.entries_), std::cend(csv.entries_), [&](const auto& tuple) {
+					std::apply([&](const auto& item, const auto&... items) {
+						os << item;
+						((os << ", " << items), ...);
+						}, tuple);
 					os << std::endl;
-				}
+				});
 			}
 
 			return os;
@@ -32,14 +31,12 @@ namespace csv {
 		template <typename...> struct TypeList {};
 
 		static std::vector<std::tuple<ColumnTypes...>> parse_data(const std::string& data) {
-
 			const auto lines = split(data, '\n');
 			std::vector<std::tuple<ColumnTypes...>> entries;
 			entries.reserve(lines.size());
 
-			std::transform(std::cbegin(lines), std::cend(lines), std::back_inserter(entries), [](const auto& line) {
-				return parse_line(line);
-			});
+			std::transform(std::cbegin(lines), std::cend(lines), std::back_inserter(entries),
+				[](const auto& line) { return parse_line(line); });
 
 			return entries;
 		}
