@@ -19,7 +19,7 @@ namespace csv {
 					std::apply([&](const auto& item, const auto&... items) {
 						os << item;
 						((os << ", " << items), ...);
-						}, tuple);
+					}, tuple);
 					os << std::endl;
 				});
 			}
