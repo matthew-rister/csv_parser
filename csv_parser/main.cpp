@@ -31,7 +31,7 @@ std::tuple<Types...> parse(const std::vector<std::string>& v) {
 
 int main() {
 
-	const auto tokens = std::vector<std::string>{ "a", "1", "3.14" }
+	const auto tokens = std::vector<std::string>{ "a", "1", "3.14" };
 	const auto [c, i, d] = parse<char, int, double>(tokens);
 	std::cout << c << ' ' << i << ' ' << d;
 
