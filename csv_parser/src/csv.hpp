@@ -7,39 +7,6 @@
 
 namespace csv {
 
-	template <typename...> struct TypeList {};
-
-	template <typename T> std::tuple<T> parse(const std::vector<std::string>& v, const std::size_t i) {
-		T t;
-		std::istringstream{v[i]} >> t;
-		return std::make_tuple(t);
-	}
-
-	std::tuple<> parse(TypeList<>, const std::vector<std::string>&, const std::size_t) {
-		return {};
-	}
-
-	template<typename T, typename... Rest>
-	std::tuple<T, Rest...> parse(TypeList<T, Rest...>, const std::vector<std::string>& v, const std::size_t i) {
-		return std::tuple_cat(
-			parse<T>(v, i),
-			parse(TypeList<Rest...>{}, v, i + 1));
-	}
-
-	template<typename... Types> std::tuple<Types...> parse(const std::vector<std::string>& v) {
-		return parse(TypeList<Types...>{}, v, 0);
-	}
-
-	template <typename... Types> void print(std::ostream& os, const std::tuple<Types...>& t) {
-		if constexpr (sizeof...(Types) > 0) {
-			std::apply(
-				[&os](const auto& item, const auto&... items) {
-					os << item;
-					((os << ", " << items), ...);
-				}, t);
-		}
-	}
-
 	template <typename... ColumnTypes> class Csv {
 
 	public:
@@ -47,16 +14,25 @@ namespace csv {
 
 		friend std::ostream& operator<<(std::ostream& os, const Csv& csv) {
 
-			for (const auto& row : csv.entries_) {
-				print(os, row);
-				os << std::endl;
+			if constexpr (sizeof...(ColumnTypes) > 0) {
+				for (const auto& row : csv.entries_) {
+					std::apply(
+						[&os](const auto& item, const auto&... items) {
+							os << item;
+							((os << ", " << items), ...);
+						}, row);
+					os << std::endl;
+				}
 			}
 
 			return os;
 		}
 
 	private:
+		template <typename...> struct TypeList {};
+
 		static std::vector<std::tuple<ColumnTypes...>> parse_data(const std::string& data) {
+
 			const auto lines = split(data, '\n');
 			std::vector<std::tuple<ColumnTypes...>> entries;
 			entries.reserve(lines.size());
@@ -70,7 +46,25 @@ namespace csv {
 
 		static std::tuple<ColumnTypes...> parse_line(const std::string& line) {
 			const auto tokens = split(line, ',');
-			return parse<ColumnTypes...>(tokens);
+			return parse_tokens(TypeList<ColumnTypes...>{}, tokens, 0);
+		}
+
+		template <typename ColumnType, typename... Rest> static std::tuple<ColumnType, Rest...> parse_tokens(
+			const TypeList<ColumnType, Rest...>&, const std::vector<std::string>& tokens, const std::size_t index) {
+
+			return std::tuple_cat(
+				parse_token<ColumnType>(tokens[index]),
+				parse_tokens(TypeList<Rest...>{}, tokens, index + 1));
+		}
+
+		static std::tuple<> parse_tokens(const TypeList<>&, const std::vector<std::string>&, const std::size_t) {
+			return {};
+		}
+
+		template <typename T> static std::tuple<T> parse_token(const std::string& token) {
+			T t;
+			std::istringstream{token} >> t;
+			return std::make_tuple(t);
 		}
 
 		static std::vector<std::string> split(const std::string& line, const char delimiter) {
