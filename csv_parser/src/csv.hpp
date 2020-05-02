@@ -19,7 +19,7 @@ namespace csv {
 		return {};
 	}
 
-	template<typename T, typename ... Rest>
+	template<typename T, typename... Rest>
 	std::tuple<T, Rest...> parse(TypeList<T, Rest...>, const std::vector<std::string>& v, const std::size_t i) {
 		return std::tuple_cat(
 			parse<T>(v, i),
@@ -36,8 +36,7 @@ namespace csv {
 				[&os](const auto& item, const auto&... items) {
 					os << item;
 					((os << ", " << items), ...);
-				},
-				t);
+				}, t);
 		}
 	}
 
