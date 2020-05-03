@@ -46,12 +46,15 @@ namespace csv {
 
 		friend std::ostream& operator<<(std::ostream& os, const Csv& csv) {
 			if constexpr (sizeof...(ColumnTypes) > 0) {
+
+				for (std::size_t i = 0; i < csv.elements_.size(); ++i) {}
+				std::size_t index = 0;
 				std::for_each(std::cbegin(csv.elements_), std::cend(csv.elements_), [&](const auto& tuple) {
 					std::apply([&](const auto& item, const auto&... items) {
 						os << item;
 						((os << ", " << items), ...);
 					}, tuple);
-					os << std::endl;
+					os << (index++ < csv.elements_.size() - 1 ? "\n" : "");
 				});
 			}
 
