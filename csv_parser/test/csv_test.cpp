@@ -1,9 +1,13 @@
-//#include "catch.hpp"
-//
-//#include "csv.hpp"
-//
-//using namespace csv;
-//
-//TEST_CASE("2 + 2 = 4") {
-//	REQUIRE(2 + 2 == 5);
-//}
+#include "catch.hpp"
+
+#include "csv.hpp"
+
+using namespace csv;
+
+TEST_CASE("Output streamming", "[csv]") {
+
+	const std::string data{"a, 3.14, 1, 1.12\nb, 3.15, 2, 1.13\n, 3.16, 3, 1.14"};
+	Csv<char, double, int, double> csv{data};
+
+	REQUIRE(csv.get<double>(1, 3) == 1.13);
+}
