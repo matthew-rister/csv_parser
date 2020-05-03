@@ -12,10 +12,10 @@ namespace csv {
 
 		template <typename...> struct TypeList {};
 
-		template <typename ColumnType, typename TupleType, int32_t TupleIndex> struct Index {
-			static ColumnType get(const TupleType& tuple, const std::size_t tuple_index) {
+		template <typename TupleType, typename TupleElementType, int32_t TupleIndex> struct Index {
+			static TupleElementType get(const TupleType& tuple, const std::size_t tuple_index) {
 				if (tuple_index == TupleIndex) {
-					if constexpr (std::is_same<ColumnType, typename std::tuple_element<TupleIndex, TupleType>::type>::value) {
+					if constexpr (std::is_same<TupleElementType, typename std::tuple_element<TupleIndex, TupleType>::type>::value) {
 						return std::get<TupleIndex>(tuple);
 					}
 					else {
@@ -23,12 +23,12 @@ namespace csv {
 					}
 				}
 
-				return Index<ColumnType, TupleType, TupleIndex>::get(tuple, tuple_index);
+				return Index<TupleType, TupleElementType, TupleIndex>::get(tuple, tuple_index);
 			}
 		};
 
-		template <typename ColumnType, typename TupleType> struct Index<ColumnType, TupleType, -1> {
-			static ColumnType get(const TupleType&, const std::size_t) {
+		template <typename TupleType, typename TupleElementType> struct Index<TupleType, TupleElementType, -1> {
+			static TupleElementType get(const TupleType&, const std::size_t) {
 				throw std::runtime_error{"Index out of bounds"};
 			}
 		};
@@ -36,9 +36,10 @@ namespace csv {
 	public:
 		explicit Csv(const std::string& data) : entries_{parse_data(data)} {}
 
-		template <typename ColumnType> ColumnType get(const std::size_t row_index, const std::size_t column_index) {
+		template <typename TupleElementType>
+		TupleElementType get(const std::size_t row_index, const std::size_t column_index) {
 			constexpr int32_t tuple_size = std::tuple_size<std::tuple<ColumnTypes...>>::value;
-			return Index<ColumnType, std::tuple<ColumnTypes...>, tuple_size - 1>::get(entries_[row_index], column_index);
+			return Index<std::tuple<ColumnTypes...>, TupleElementType, tuple_size - 1>::get(entries_[row_index], column_index);
 		}
 
 		friend std::ostream& operator<<(std::ostream& os, const Csv& csv) {
