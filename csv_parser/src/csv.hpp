@@ -17,7 +17,8 @@ namespace csv {
 		struct Index {
 			static TupleElementType Get(const TupleType& tuple, const std::size_t tuple_index) {
 				if (tuple_index == TupleIndex) {
-					if constexpr (std::is_same<TupleElementType, typename std::tuple_element<TupleIndex, TupleType>::type>::value) {
+					using ActualTupleElementType = typename std::tuple_element<TupleIndex, TupleType>::type;
+					if constexpr (std::is_same<TupleElementType, ActualTupleElementType>::value) {
 						return std::get<TupleIndex>(tuple);
 					} else {
 						throw std::runtime_error{"Tuple element type mismatch"};
@@ -40,8 +41,9 @@ namespace csv {
 
 		template <typename TupleElementType>
 		TupleElementType Get(const std::size_t row_index, const std::size_t column_index) {
-			constexpr int32_t tuple_size = std::tuple_size<std::tuple<ColumnTypes...>>::value;
-			return Index<std::tuple<ColumnTypes...>, TupleElementType, tuple_size - 1>::Get(elements_[row_index], column_index);
+			using TupleType = std::tuple<ColumnTypes...>;
+			constexpr int32_t tuple_index = std::tuple_size<TupleType>::value - 1;
+			return Index<TupleType, TupleElementType, tuple_index>::Get(elements_[row_index], column_index);
 		}
 
 		[[nodiscard]] std::string ToString() const {
