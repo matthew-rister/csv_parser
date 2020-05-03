@@ -44,21 +44,23 @@ namespace csv {
 			return Index<std::tuple<ColumnTypes...>, TupleElementType, tuple_size - 1>::Get(elements_[row_index], column_index);
 		}
 
-		friend std::ostream& operator<<(std::ostream& os, const Csv& csv) {
-			if constexpr (sizeof...(ColumnTypes) > 0) {
+		[[nodiscard]] std::string ToString() const {
+			std::ostringstream oss;
 
-				for (std::size_t i = 0; i < csv.elements_.size(); ++i) {}
+			if constexpr (sizeof...(ColumnTypes) > 0) {
 				std::size_t index = 0;
-				std::for_each(std::cbegin(csv.elements_), std::cend(csv.elements_), [&](const auto& tuple) {
+				for (const auto& tuple : elements_) {
 					std::apply([&](const auto& item, const auto&... items) {
-						os << item;
-						((os << ", " << items), ...);
+						oss << item;
+						((oss << ", " << items), ...);
 					}, tuple);
-					os << (index++ < csv.elements_.size() - 1 ? "\n" : "");
-				});
+					if (index++ < elements_.size() - 1) {
+						oss << std::endl;
+					}
+				}
 			}
 
-			return os;
+			return oss.str();
 		}
 
 	private:

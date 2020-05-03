@@ -10,9 +10,7 @@ TEST_CASE("Output streamming", "[csv]") {
 	Csv<char, double, int, double> csv{ data };
 
 	SECTION("Printing should be equal to the original") {
-		std::ostringstream oss;
-		oss << csv;
-		REQUIRE(oss.str() == data);
+		REQUIRE(csv.ToString() == data);
 	}
 
 
