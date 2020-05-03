@@ -18,7 +18,7 @@ namespace csv {
 			static TupleElementType Get(const TupleType& tuple, const std::size_t index) {
 				if (index == CurrentIndex) {
 					using ActualTupleElementType = typename std::tuple_element<CurrentIndex, TupleType>::type;
-					if constexpr (!std::is_same<TupleElementType, ActualTupleElementType>::value) {
+					if constexpr (std::is_same<TupleElementType, ActualTupleElementType>::value) {
 						return std::get<CurrentIndex>(tuple);
 					} else {
 						throw std::runtime_error{"Tuple element type mismatch"};
