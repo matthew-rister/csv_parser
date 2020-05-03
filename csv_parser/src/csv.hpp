@@ -6,16 +6,39 @@
 #include <string>
 #include <vector>
 
-
 namespace csv {
 
 	template <typename... ColumnTypes> class Csv {
+
+		template <typename...> struct TypeList {};
+
+		template <typename ColumnType, typename TupleType, int32_t TupleIndex> struct Index {
+			static ColumnType get(const TupleType& tuple, const std::size_t tuple_index) {
+				if (tuple_index == TupleIndex) {
+					if constexpr (std::is_same<ColumnType, typename std::tuple_element<TupleIndex, TupleType>::type>::value) {
+						return std::get<TupleIndex>(tuple);
+					}
+					else {
+						throw std::runtime_error{"Tuple element type mismatch"};
+					}
+				}
+
+				return Index<ColumnType, TupleType, TupleIndex>::get(tuple, tuple_index);
+			}
+		};
+
+		template <typename ColumnType, typename TupleType> struct Index<ColumnType, TupleType, -1> {
+			static ColumnType get(const TupleType&, const std::size_t) {
+				throw std::runtime_error{"Index out of bounds"};
+			}
+		};
 
 	public:
 		explicit Csv(const std::string& data) : entries_{parse_data(data)} {}
 
 		template <typename ColumnType> ColumnType get(const std::size_t row_index, const std::size_t column_index) {
-			return get_impl<ColumnType>(entries_[row_index], column_index);
+			constexpr int32_t tuple_size = std::tuple_size<std::tuple<ColumnTypes...>>::value;
+			return Index<ColumnType, std::tuple<ColumnTypes...>, tuple_size - 1>::get(entries_[row_index], column_index);
 		}
 
 		friend std::ostream& operator<<(std::ostream& os, const Csv& csv) {
@@ -43,8 +66,6 @@ namespace csv {
 
 			return entries;
 		}
-
-		template <typename...> struct TypeList {};
 
 		static std::tuple<ColumnTypes...> parse_line(const std::string& line) {
 			const auto tokens = split(line, ',');
@@ -79,32 +100,6 @@ namespace csv {
 			}
 
 			return tokens;
-		}
-
-		template <typename ColumnType, typename TupleType, int32_t TupleIndex> struct Index {
-			static ColumnType get(const TupleType& tuple, const std::size_t tuple_index) {
-				if (tuple_index == TupleIndex) {
-					if constexpr (std::is_same<ColumnType, typename std::tuple_element<TupleIndex, TupleType>::type>::value) {
-						return std::get<TupleIndex>(tuple);
-					}
-					else {
-						throw std::runtime_error{"Type"};
-					}
-				}
-
-				return Index<ColumnType, TupleType, TupleIndex>::get(tuple, tuple_index);
-			}
-		};
-
-		template <typename ColumnType, typename TupleType> struct Index<ColumnType, TupleType, -1> {
-			static ColumnType get(const TupleType&, const std::size_t) {
-				throw std::runtime_error{"Index out of bounds"};
-			}
-		};
-
-		template <typename ColumnType, typename Tuple>
-		static ColumnType get_impl(const Tuple& tuple, const std::size_t tuple_index) {
-			return Index<ColumnType, Tuple, std::tuple_size<Tuple>::value - 1>::get(tuple, tuple_index);
 		}
 
 		std::vector<std::tuple<ColumnTypes...>> entries_;
