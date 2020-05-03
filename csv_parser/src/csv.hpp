@@ -19,8 +19,7 @@ namespace csv {
 				if (tuple_index == TupleIndex) {
 					if constexpr (std::is_same<TupleElementType, typename std::tuple_element<TupleIndex, TupleType>::type>::value) {
 						return std::get<TupleIndex>(tuple);
-					}
-					else {
+					} else {
 						throw std::runtime_error{"Tuple element type mismatch"};
 					}
 				}
@@ -101,9 +100,8 @@ namespace csv {
 			std::istringstream iss{line};
 
 			for (std::string token;
-				std::getline(iss, token, delimiter);
-				tokens.push_back(std::move(token))) {
-			}
+			     std::getline(iss, token, delimiter);
+			     tokens.push_back(std::move(token))) {}
 
 			return tokens;
 		}
