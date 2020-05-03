@@ -37,17 +37,17 @@ namespace csv {
 		};
 
 	public:
-		explicit Csv(const std::string& data) : entries_{ParseData(data)} {}
+		explicit Csv(const std::string& data) : elements_{ParseData(data)} {}
 
 		template <typename TupleElementType>
 		TupleElementType Get(const std::size_t row_index, const std::size_t column_index) {
 			constexpr int32_t tuple_size = std::tuple_size<std::tuple<ColumnTypes...>>::value;
-			return Index<std::tuple<ColumnTypes...>, TupleElementType, tuple_size - 1>::Get(entries_[row_index], column_index);
+			return Index<std::tuple<ColumnTypes...>, TupleElementType, tuple_size - 1>::Get(elements_[row_index], column_index);
 		}
 
 		friend std::ostream& operator<<(std::ostream& os, const Csv& csv) {
 			if constexpr (sizeof...(ColumnTypes) > 0) {
-				std::for_each(std::cbegin(csv.entries_), std::cend(csv.entries_), [&](const auto& tuple) {
+				std::for_each(std::cbegin(csv.elements_), std::cend(csv.elements_), [&](const auto& tuple) {
 					std::apply([&](const auto& item, const auto&... items) {
 						os << item;
 						((os << ", " << items), ...);
@@ -108,6 +108,6 @@ namespace csv {
 			return tokens;
 		}
 
-		std::vector<std::tuple<ColumnTypes...>> entries_;
+		std::vector<std::tuple<ColumnTypes...>> elements_;
 	};
 }
