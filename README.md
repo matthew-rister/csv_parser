@@ -11,7 +11,7 @@ using namespace csv;
 
 const std::string data{"a, 3.14, 42, true\nb, 2.72, 0, false"};
 const Csv<char, double, int, bool> csv{data};
-const auto e = csv.get<double>.get<double>(0, 1);
+const auto pi = csv.Get<double>>(0, 1);
 std::cout << csv.ToString() << std::endl;
 ```
 
