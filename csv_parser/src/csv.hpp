@@ -39,10 +39,9 @@ namespace csv {
 	public:
 		explicit Csv(const std::string& data) : elements_{ParseData(data)} {}
 
-		template <typename TupleElementType>
-		TupleElementType Get(const std::size_t row_index, const std::size_t column_index) {
-			using TupleType = std::tuple<ColumnTypes...>;
-			return TupleElementAtIndex<TupleType, TupleElementType>::Get(elements_[row_index], column_index);
+		template <typename ColumnType>
+		ColumnType Get(const std::size_t row_index, const std::size_t column_index) {
+			return TupleElementAtIndex<std::tuple<ColumnTypes...>, ColumnType>::Get(elements_[row_index], column_index);
 		}
 
 		[[nodiscard]] std::string ToString() const {
