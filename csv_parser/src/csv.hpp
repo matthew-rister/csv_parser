@@ -21,7 +21,9 @@ namespace csv {
 					if constexpr (std::is_same<TupleElementType, ActualTupleElementType>::value) {
 						return std::get<CurrentIndex>(tuple);
 					} else {
-						throw std::runtime_error{"Tuple element type mismatch"};
+						std::ostringstream oss;
+						oss << "Tuple element type mismatch at index " << index;
+						throw std::runtime_error{oss.str()};
 					}
 				}
 
@@ -31,8 +33,8 @@ namespace csv {
 
 		template <typename TupleType, typename TupleElementType>
 		struct TupleElementAtIndex<TupleType, TupleElementType, -1> {
-			static TupleElementType Get(const TupleType&, const std::size_t) {
-				throw std::runtime_error{"Index out of bounds"};
+			static TupleElementType Get(const TupleType&, const std::size_t index) {
+				throw std::runtime_error{"Tuple index out of bounds"};
 			}
 		};
 
