@@ -13,7 +13,7 @@ namespace csv {
 		template <typename...>
 		struct TypeList {};
 
-		template <typename TupleType, typename TupleElementType, int32_t CurrentIndex = std::tuple_size<TupleType>::value - 1>
+		template <typename TupleType, typename TupleElementType, std::int32_t CurrentIndex = std::tuple_size<TupleType>::value - 1>
 		struct TupleElementAtIndex {
 			static TupleElementType Get(const TupleType& tuple, const std::size_t index) {
 				if (index == CurrentIndex) {
@@ -32,8 +32,8 @@ namespace csv {
 		};
 
 		template <typename TupleType, typename TupleElementType>
-		struct TupleElementAtIndex<TupleType, TupleElementType, -1> {
-			static TupleElementType Get(const TupleType&, const std::size_t index) {
+		struct TupleElementAtIndex<TupleType, TupleElementType, static_cast<std::int32_t>(-1)> {
+			static TupleElementType Get(const TupleType&, const std::size_t) {
 				throw std::runtime_error{"Tuple index out of bounds"};
 			}
 		};
