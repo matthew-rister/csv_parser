@@ -42,7 +42,7 @@ namespace csv {
 		explicit Csv(const std::string& data) : elements_{ParseData(data)} {}
 
 		template <typename ColumnType>
-		ColumnType Get(const std::size_t row_index, const std::size_t column_index) {
+		[[nodiscard]] ColumnType Get(const std::size_t row_index, const std::size_t column_index) const {
 			return TupleElementAtIndex<std::tuple<ColumnTypes...>, ColumnType>::Get(elements_[row_index], column_index);
 		}
 
