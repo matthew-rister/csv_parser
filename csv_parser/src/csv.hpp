@@ -10,9 +10,11 @@ namespace csv {
 
 	template <typename... ColumnTypes> class Csv {
 
-		template <typename...> struct TypeList {};
+		template <typename...>
+		struct TypeList {};
 
-		template <typename TupleType, typename TupleElementType, int32_t TupleIndex> struct Index {
+		template <typename TupleType, typename TupleElementType, int32_t TupleIndex>
+		struct Index {
 			static TupleElementType Get(const TupleType& tuple, const std::size_t tuple_index) {
 				if (tuple_index == TupleIndex) {
 					if constexpr (std::is_same<TupleElementType, typename std::tuple_element<TupleIndex, TupleType>::type>::value) {
@@ -27,7 +29,8 @@ namespace csv {
 			}
 		};
 
-		template <typename TupleType, typename TupleElementType> struct Index<TupleType, TupleElementType, -1> {
+		template <typename TupleType, typename TupleElementType>
+		struct Index<TupleType, TupleElementType, -1> {
 			static TupleElementType Get(const TupleType&, const std::size_t) {
 				throw std::runtime_error{"Index out of bounds"};
 			}
@@ -73,7 +76,8 @@ namespace csv {
 			return ParseTokens(TypeList<ColumnTypes...>{}, tokens, 0);
 		}
 
-		template <typename ColumnType, typename... Rest> static std::tuple<ColumnType, Rest...> ParseTokens(
+		template <typename ColumnType, typename... Rest>
+		static std::tuple<ColumnType, Rest...> ParseTokens(
 			const TypeList<ColumnType, Rest...>&, const std::vector<std::string>& tokens, const std::size_t index) {
 
 			return std::tuple_cat(
@@ -85,7 +89,8 @@ namespace csv {
 			return {};
 		}
 
-		template <typename T> static std::tuple<T> ParseToken(const std::string& token) {
+		template <typename T>
+		static std::tuple<T> ParseToken(const std::string& token) {
 			T t;
 			std::istringstream{token} >> t;
 			return std::make_tuple(t);
