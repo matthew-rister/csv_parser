@@ -89,11 +89,11 @@ namespace csv {
 			return {};
 		}
 
-		template <typename T>
-		static std::tuple<T> ParseToken(const std::string& token) {
-			T t;
-			std::istringstream{token} >> t;
-			return std::make_tuple(t);
+		template <typename ColumnType>
+		static std::tuple<ColumnType> ParseToken(const std::string& token) {
+			ColumnType element;
+			std::istringstream{token} >> element;
+			return std::make_tuple(element);
 		}
 
 		static std::vector<std::string> Split(const std::string& line, const char delimiter) {
