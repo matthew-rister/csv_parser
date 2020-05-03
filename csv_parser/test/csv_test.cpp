@@ -2,8 +2,6 @@
 
 #include "csv.hpp"
 
-#include <iostream>
-
 using namespace csv;
 
 TEST_CASE("CSV parsing", "[csv]") {
