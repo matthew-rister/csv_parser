@@ -13,19 +13,19 @@ namespace csv {
 		template <typename...>
 		struct TypeList {};
 
-		template <typename TupleType, typename TupleElementType, int32_t TupleIndex>
+		template <typename TupleType, typename TupleElementType, int32_t CurrentIndex = std::tuple_size<TupleType>::value - 1>
 		struct Index {
-			static TupleElementType Get(const TupleType& tuple, const std::size_t tuple_index) {
-				if (tuple_index == TupleIndex) {
-					using ActualTupleElementType = typename std::tuple_element<TupleIndex, TupleType>::type;
+			static TupleElementType Get(const TupleType& tuple, const std::size_t index) {
+				if (index == CurrentIndex) {
+					using ActualTupleElementType = typename std::tuple_element<CurrentIndex, TupleType>::type;
 					if constexpr (std::is_same<TupleElementType, ActualTupleElementType>::value) {
-						return std::get<TupleIndex>(tuple);
+						return std::get<CurrentIndex>(tuple);
 					} else {
 						throw std::runtime_error{"Tuple element type mismatch"};
 					}
 				}
 
-				return Index<TupleType, TupleElementType, TupleIndex>::Get(tuple, tuple_index);
+				return Index<TupleType, TupleElementType, CurrentIndex - 1>::Get(tuple, index);
 			}
 		};
 
@@ -42,8 +42,7 @@ namespace csv {
 		template <typename TupleElementType>
 		TupleElementType Get(const std::size_t row_index, const std::size_t column_index) {
 			using TupleType = std::tuple<ColumnTypes...>;
-			constexpr int32_t tuple_index = std::tuple_size<TupleType>::value - 1;
-			return Index<TupleType, TupleElementType, tuple_index>::Get(elements_[row_index], column_index);
+			return Index<TupleType, TupleElementType>::Get(elements_[row_index], column_index);
 		}
 
 		[[nodiscard]] std::string ToString() const {
