@@ -98,7 +98,11 @@ namespace csv {
 		template <typename ColumnType>
 		static std::tuple<ColumnType> ParseToken(const std::string& token) {
 			ColumnType element;
-			std::istringstream{token} >> element;
+			if constexpr (std::is_same<ColumnType, bool>::value) {
+				std::istringstream{token} >> std::boolalpha >> element;
+			} else {
+				std::istringstream{token} >> element;
+			}
 			return std::make_tuple(element);
 		}
 
