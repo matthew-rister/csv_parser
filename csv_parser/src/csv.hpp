@@ -11,6 +11,8 @@ namespace csv {
 	class CsvBase {
 
 	protected:
+		CsvBase() = default;
+
 		static std::vector<std::string> Split(std::iostream& line_stream, const char delimiter) {
 			std::vector<std::string> tokens;
 
