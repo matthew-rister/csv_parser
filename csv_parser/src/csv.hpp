@@ -140,7 +140,6 @@ namespace csv {
 				}
 				os << (i < csv.elements_.size() - 1 ? "\n" : "");
 			}
-
 			return os;
 		}
 
