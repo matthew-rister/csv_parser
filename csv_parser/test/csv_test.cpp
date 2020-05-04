@@ -17,12 +17,12 @@ TEST_CASE("CSV Initialization", "[csv]") {
 			<< "3, 4, 5" << std::endl
 			<< "6, 7, 8";
 
-		const Csv<int, int, int> csv{data};
+		const Csv<int32_t, int32_t, int32_t> csv{data};
 
 		SECTION("Accessing CSV elements returns the correct element") {
-			for (int i = 0; i < 3; ++i) {
-				for (int j = 0; j < 3; ++j) {
-					REQUIRE(csv.Get<int>(i, j) == 3 * i + j);
+			for (int32_t i = 0; i < 3; ++i) {
+				for (int32_t j = 0; j < 3; ++j) {
+					REQUIRE(csv.Get<int32_t>(i, j) == 3 * i + j);
 				}
 			}
 		}
@@ -34,7 +34,7 @@ TEST_CASE("CSV Initialization", "[csv]") {
 			<< "b, 2.718, 0, false" << std::endl
 			<< "c, 1.618, 7, true";
 
-		const Csv<char, double, int, bool> csv{data};
+		const Csv<char, double, int32_t, bool> csv{data};
 
 		SECTION("Accessing CSV elements returns the correct element") {
 
@@ -51,9 +51,9 @@ TEST_CASE("CSV Initialization", "[csv]") {
 			}
 
 			SECTION("Accessing integer elements is correct") {
-				REQUIRE(csv.Get<int>(0, 2) == 42);
-				REQUIRE(csv.Get<int>(1, 2) == 0);
-				REQUIRE(csv.Get<int>(2, 2) == 7);
+				REQUIRE(csv.Get<int32_t>(0, 2) == 42);
+				REQUIRE(csv.Get<int32_t>(1, 2) == 0);
+				REQUIRE(csv.Get<int32_t>(2, 2) == 7);
 			}
 
 			SECTION("Accessing boolean elements is correct") {
