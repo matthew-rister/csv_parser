@@ -109,7 +109,8 @@ namespace csv {
 			return ParseTokens(TypeList<ColumnTypes...>{}, tokens, 0);
 		}
 
-		template <typename ColumnType, typename... Rest> static std::tuple<ColumnType, Rest...> ParseTokens(
+		template <typename ColumnType, typename... Rest>
+		static std::tuple<ColumnType, Rest...> ParseTokens(
 			const TypeList<ColumnType, Rest...>&, const std::vector<std::string>& tokens, const std::size_t index) {
 
 			return std::tuple_cat(
