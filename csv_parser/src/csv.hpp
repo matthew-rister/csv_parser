@@ -25,7 +25,7 @@ namespace csv {
 		}
 
 		static std::vector<std::string> Split(const std::string& line, const char delimiter) {
-			std::stringstream line_stream{ line };
+			std::stringstream line_stream{line};
 			return Split(line_stream, delimiter);
 		}
 	};
@@ -134,6 +134,17 @@ namespace csv {
 
 		[[nodiscard]] const T& Get(const std::size_t i, const std::size_t j) const {
 			return elements_[i][j];
+		}
+
+		friend std::ostream& operator<<(std::ostream& os, const Csv csv) {
+			for (std::size_t i = 0; i < csv.elements_.size(); ++i) {
+				for (std::size_t j = 0; j < csv.elements_[i].size(); ++j) {
+					os << csv.elements_[i][j] << (j < csv.elements_[i].size() - 1 ? ", " : "");
+				}
+				os << (i < csv.elements_.size() - 1 ? "\n" : "");
+			}
+
+			return os;
 		}
 
 	private:
