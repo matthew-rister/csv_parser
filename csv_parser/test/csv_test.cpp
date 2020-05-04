@@ -45,9 +45,9 @@ TEST_CASE("CSV Initialization", "[csv]") {
 			}
 
 			SECTION("Accessing double floating point elements is correct") {
-				REQUIRE(csv.Get<double>(0, 1) == 3.141);
-				REQUIRE(csv.Get<double>(1, 1) == 2.718);
-				REQUIRE(csv.Get<double>(2, 1) == 1.618);
+				REQUIRE(csv.Get<double>(0, 1) == Approx(3.141));
+				REQUIRE(csv.Get<double>(1, 1) == Approx(2.718));
+				REQUIRE(csv.Get<double>(2, 1) == Approx(1.618));
 			}
 
 			SECTION("Accessing integer elements is correct") {
@@ -61,6 +61,24 @@ TEST_CASE("CSV Initialization", "[csv]") {
 				REQUIRE(csv.Get<bool>(1, 3) == false);
 				REQUIRE(csv.Get<bool>(2, 3) == true);
 			}
+		}
+	}
+
+	SECTION("Initializing a CSV with numeric limits") {
+		std::stringstream data;
+		data << std::numeric_limits<int32_t>::max() << ", " << std::numeric_limits<double>::max() << std::endl
+			<< std::numeric_limits<int32_t>::min() << ", " << std::numeric_limits<double>::min();
+
+		const Csv<int32_t, double> csv{data};
+
+		SECTION("Parsing integer numeric limits is correct") {
+			REQUIRE(csv.Get<int32_t>(0, 0) == std::numeric_limits<int32_t>::max());
+			REQUIRE(csv.Get<int32_t>(1, 0) == std::numeric_limits<int32_t>::min());
+		}
+
+		SECTION("Parsing double numeric limits is correct") {
+			REQUIRE(csv.Get<double>(0, 1) == Approx{std::numeric_limits<double>::max()});
+			REQUIRE(csv.Get<double>(1, 1) == Approx{std::numeric_limits<double>::min()});
 		}
 	}
 }
