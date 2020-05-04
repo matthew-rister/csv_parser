@@ -8,6 +8,10 @@
 
 namespace csv {
 
+	class CsvBase {
+
+	};
+
 	template <typename... ColumnTypes> class Csv {
 
 		template <typename...>
@@ -64,13 +68,13 @@ namespace csv {
 	private:
 		static std::vector<std::tuple<ColumnTypes...>> ParseData(std::iostream& data) {
 			const auto lines = Split(data, '\n');
-			std::vector<std::tuple<ColumnTypes...>> entries;
-			entries.reserve(lines.size());
+			std::vector<std::tuple<ColumnTypes...>> elements;
+			elements.reserve(lines.size());
 
-			std::transform(std::cbegin(lines), std::cend(lines), std::back_inserter(entries),
+			std::transform(std::cbegin(lines), std::cend(lines), std::back_inserter(elements),
 				[](const auto& line) { return ParseLine(line); });
 
-			return entries;
+			return elements;
 		}
 
 		static std::tuple<ColumnTypes...> ParseLine(const std::string& line) {
@@ -118,5 +122,66 @@ namespace csv {
 		}
 
 		std::vector<std::tuple<ColumnTypes...>> elements_;
+	};
+
+	template <typename T> class Csv<T> {
+
+	public:
+		explicit Csv(std::iostream& data) : elements_{ParseData(data)} {}
+
+		const T& Get(const std::size_t i, const std::size_t j) const {
+			return elements_[i][j];
+		}
+
+	private:
+		static std::vector<std::vector<T>> ParseData(std::iostream& data) {
+			const auto lines = Split(data, '\n');
+			std::vector<std::vector<T>> elements;
+			elements.reserve(lines.size());
+
+			std::transform(std::cbegin(lines), std::cend(lines), std::back_inserter(elements),
+				[](const auto& line) { return ParseLine(line); });
+
+			return elements;
+		}
+
+		static std::vector<T> ParseLine(const std::string& line) {
+			const auto tokens = Split(line, ',');
+			std::vector<T> elements;
+			elements.reserve(tokens.size());
+
+			std::transform(std::cbegin(tokens), std::cend(tokens), std::back_inserter(elements),
+				[](const auto& token) { return ParseToken(token); });
+
+			return elements;
+		}
+
+		static T ParseToken(const std::string& token) {
+			T element;
+			if constexpr (std::is_same<T, bool>::value) {
+				std::istringstream{token} >> std::boolalpha >> element;
+			} else {
+				std::istringstream{token} >> element;
+			}
+			return element;
+		}
+
+		static std::vector<std::string> Split(std::iostream& line_stream, const char delimiter) {
+			std::vector<std::string> tokens;
+
+			for (std::string token;
+				std::getline(line_stream, token, delimiter);
+				tokens.push_back(std::move(token))) {
+			}
+
+			return tokens;
+		}
+
+		static std::vector<std::string> Split(const std::string& line, const char delimiter) {
+			std::stringstream line_stream{line};
+			return Split(line_stream, delimiter);
+		}
+
+		std::vector<std::vector<T>> elements_;
 	};
 }

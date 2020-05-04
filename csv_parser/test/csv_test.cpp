@@ -17,12 +17,12 @@ TEST_CASE("CSV Initialization", "[csv]") {
 			<< "3, 4, 5" << std::endl
 			<< "6, 7, 8";
 
-		const Csv<int32_t, int32_t, int32_t> csv{data};
+		const Csv<int32_t> csv{data};
 
 		SECTION("Accessing CSV elements returns the correct element") {
 			for (int32_t i = 0; i < 3; ++i) {
 				for (int32_t j = 0; j < 3; ++j) {
-					REQUIRE(csv.Get<int32_t>(i, j) == 3 * i + j);
+					REQUIRE(csv.Get(i, j) == 3 * i + j);
 				}
 			}
 		}
@@ -65,7 +65,6 @@ TEST_CASE("CSV Initialization", "[csv]") {
 	}
 
 	SECTION("Initializing a CSV with numeric limits") {
-
 		constexpr auto int64_t_max = std::numeric_limits<int64_t>::max();
 		constexpr auto int64_t_min = std::numeric_limits<int64_t>::min();
 		constexpr auto double_max = std::numeric_limits<double>::max();
