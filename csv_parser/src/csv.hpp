@@ -78,6 +78,7 @@ namespace csv {
 
 		[[nodiscard]] std::string ToString() const {
 			std::ostringstream oss;
+
 			if constexpr (sizeof...(ColumnTypes) > 0) {
 				for (std::size_t i = 0; i < elements_.size(); ++i) {
 					std::apply([&](const auto& item, const auto&... items) {
@@ -87,6 +88,7 @@ namespace csv {
 					oss << (i < elements_.size() - 1 ? "\n" : "");
 				}
 			}
+
 			return oss.str();
 		}
 
@@ -157,13 +159,13 @@ namespace csv {
 
 		static std::vector<T> ParseLine(const std::string& line) {
 			const auto tokens = Split(line, ',');
-			std::vector<T> elements;
-			elements.reserve(tokens.size());
+			std::vector<T> values;
+			values.reserve(tokens.size());
 
-			std::transform(std::cbegin(tokens), std::cend(tokens), std::back_inserter(elements),
+			std::transform(std::cbegin(tokens), std::cend(tokens), std::back_inserter(values),
 				[](const auto& token) { return ParseToken<T>(token); });
 
-			return elements;
+			return values;
 		}
 
 		std::vector<std::vector<T>> elements_;
