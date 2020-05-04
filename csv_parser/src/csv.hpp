@@ -76,20 +76,18 @@ namespace csv {
 			return TupleElementAtIndex<std::tuple<ColumnTypes...>, ColumnType>::Get(elements_[row_index], column_index);
 		}
 
-		friend std::ostream& operator<<(std::ostream& os, const Csv& csv) {
+		[[nodiscard]] std::string ToString() const {
+			std::ostringstream oss;
 			if constexpr (sizeof...(ColumnTypes) > 0) {
-				std::size_t index = 0;
-				for (const auto& tuple : csv.elements_) {
+				for (std::size_t i = 0; i < elements_.size(); ++i) {
 					std::apply([&](const auto& item, const auto&... items) {
-						os << item;
-						((os << ", " << items), ...);
-					}, tuple);
-					if (index++ < csv.elements_.size() - 1) {
-						os << std::endl;
-					}
+						oss << item;
+						((oss << ", " << items), ...);
+					}, elements_[i]);
+					oss << (i < elements_.size() - 1 ? "\n" : "");
 				}
 			}
-			return os;
+			return oss.str();
 		}
 
 	private:
@@ -134,14 +132,15 @@ namespace csv {
 			return elements_[row_index][column_index];
 		}
 
-		friend std::ostream& operator<<(std::ostream& os, const Csv csv) {
-			for (std::size_t i = 0; i < csv.elements_.size(); ++i) {
-				for (std::size_t j = 0; j < csv.elements_[i].size(); ++j) {
-					os << csv.elements_[i][j] << (j < csv.elements_[i].size() - 1 ? ", " : "");
+		[[nodiscard]] std::string ToString() const {
+			std::ostringstream oss;
+			for (std::size_t i = 0; i < elements_.size(); ++i) {
+				for (std::size_t j = 0; j < elements_[i].size(); ++j) {
+					oss << elements_[i][j] << (j < elements_[i].size() - 1 ? ", " : "");
 				}
-				os << (i < csv.elements_.size() - 1 ? "\n" : "");
+				oss << (i < elements_.size() - 1 ? "\n" : "");
 			}
-			return os;
+			return oss.str();
 		}
 
 	private:
