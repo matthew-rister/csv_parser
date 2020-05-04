@@ -49,7 +49,7 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 			REQUIRE(csv.Get<char>(2, 0) == 'c');
 		}
 
-		SECTION("Double parsing is correct") {
+		SECTION("Double-precision floating-point parsing is correct") {
 			REQUIRE(csv.Get<double>(0, 1) == Approx(3.141));
 			REQUIRE(csv.Get<double>(1, 1) == Approx(2.718));
 			REQUIRE(csv.Get<double>(2, 1) == Approx(1.618));
@@ -83,7 +83,7 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 			REQUIRE(csv.Get<int64_t>(1, 0) == int64_t_min);
 		}
 
-		SECTION("Parsing double numeric limits is correct") {
+		SECTION("Parsing double-precision floating-point numeric limits is correct") {
 			REQUIRE(csv.Get<double>(0, 1) == Approx{ double_max });
 			REQUIRE(csv.Get<double>(1, 1) == Approx{ double_min });
 		}
