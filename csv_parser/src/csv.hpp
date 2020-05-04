@@ -69,7 +69,7 @@ namespace csv {
 		};
 
 	public:
-		explicit Csv(std::iostream& data) : CsvBase{}, elements_{ParseData(data)} {}
+		explicit Csv(std::iostream& data) : elements_{ParseData(data)} {}
 
 		template <typename ColumnType>
 		[[nodiscard]] const ColumnType& Get(const std::size_t row_index, const std::size_t column_index) const {
@@ -128,7 +128,7 @@ namespace csv {
 	template <typename T> class Csv<T> : public CsvBase {
 
 	public:
-		explicit Csv(std::iostream& data) : CsvBase{}, elements_{ParseData(data)} {}
+		explicit Csv(std::iostream& data) : elements_{ParseData(data)} {}
 
 		[[nodiscard]] const T& Get(const std::size_t row_index, const std::size_t column_index) const {
 			return elements_[row_index][column_index];
