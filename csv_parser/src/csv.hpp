@@ -13,6 +13,16 @@ namespace csv {
 	protected:
 		CsvBase() = default;
 
+		template <typename T> static T ParseToken(const std::string& token) {
+			T element;
+			if constexpr (std::is_same<T, bool>::value) {
+				std::istringstream{token} >> std::boolalpha >> element;
+			} else {
+				std::istringstream{token} >> element;
+			}
+			return element;
+		}
+
 		static std::vector<std::string> Split(std::iostream& line_stream, const char delimiter) {
 			std::vector<std::string> tokens;
 
@@ -105,23 +115,12 @@ namespace csv {
 			const TypeList<ColumnType, Rest...>&, const std::vector<std::string>& tokens, const std::size_t index) {
 
 			return std::tuple_cat(
-				ParseToken<ColumnType>(tokens[index]),
+				std::make_tuple(ParseToken<ColumnType>(tokens[index])),
 				ParseTokens(TypeList<Rest...>{}, tokens, index + 1));
 		}
 
 		static std::tuple<> ParseTokens(const TypeList<>&, const std::vector<std::string>&, const std::size_t) {
 			return {};
-		}
-
-		template <typename ColumnType>
-		static std::tuple<ColumnType> ParseToken(const std::string& token) {
-			ColumnType element;
-			if constexpr (std::is_same<ColumnType, bool>::value) {
-				std::istringstream{token} >> std::boolalpha >> element;
-			} else {
-				std::istringstream{token} >> element;
-			}
-			return std::make_tuple(element);
 		}
 
 		std::vector<std::tuple<ColumnTypes...>> elements_;
@@ -165,19 +164,9 @@ namespace csv {
 			elements.reserve(tokens.size());
 
 			std::transform(std::cbegin(tokens), std::cend(tokens), std::back_inserter(elements),
-				[](const auto& token) { return ParseToken(token); });
+				[](const auto& token) { return ParseToken<T>(token); });
 
 			return elements;
-		}
-
-		static T ParseToken(const std::string& token) {
-			T element;
-			if constexpr (std::is_same<T, bool>::value) {
-				std::istringstream{token} >> std::boolalpha >> element;
-			} else {
-				std::istringstream{token} >> element;
-			}
-			return element;
 		}
 
 		std::vector<std::vector<T>> elements_;
