@@ -74,11 +74,9 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 		constexpr auto double_max = std::numeric_limits<double>::max();
 		constexpr auto double_min = std::numeric_limits<double>::max();
 
-		std::stringstream data;
-		data << int64_t_max << ", " << double_max << std::endl
-			<< int64_t_min << ", " << double_min;
-
-		const Csv<int64_t, double> csv{data};
+		std::stringstream input_stream;
+		input_stream << int64_t_max << ", " << double_max << '\n' << int64_t_min << ", " << double_min;
+		const Csv<int64_t, double> csv{input_stream};
 
 		SECTION("Parsing integer numeric limits is correct") {
 			REQUIRE(csv.Get<int64_t>(0, 0) == int64_t_max);
@@ -89,5 +87,14 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 			REQUIRE(csv.Get<double>(0, 1) == Approx{ double_max });
 			REQUIRE(csv.Get<double>(1, 1) == Approx{ double_min });
 		}
+	}
+
+	SECTION("Writing a CSV to an output stream is identical to its input") {
+		const std::string input{"a, 3.141, 42, true\nb, 2.718, 0, false\nc, 1.618, 7, true"};
+		std::stringstream input_stream{input};
+		const Csv<char, double, int32_t, bool> csv{input_stream};
+
+		// TODO: fix output stream conversion for booleans
+		REQUIRE(csv.ToString() == std::string{ "a, 3.141, 42, 1\nb, 2.718, 0, 0\nc, 1.618, 7, 1" });
 	}
 }
