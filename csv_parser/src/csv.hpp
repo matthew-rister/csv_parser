@@ -39,7 +39,7 @@ namespace csv {
 		}
 	};
 
-	template <typename... ColumnTypes> class Csv : public CsvBase {
+	template <typename... ColumnTypes> class Csv final : public CsvBase {
 
 		template <typename...> struct TypeList {};
 
@@ -124,7 +124,7 @@ namespace csv {
 		std::vector<std::tuple<ColumnTypes...>> elements_;
 	};
 
-	template <typename T> class Csv<T> : public CsvBase {
+	template <typename T> class Csv<T> final : public CsvBase {
 
 	public:
 		explicit Csv(std::iostream& data) : elements_{ParseData(data)} {}
