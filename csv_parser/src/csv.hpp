@@ -26,7 +26,6 @@ namespace csv {
 						throw std::runtime_error{oss.str()};
 					}
 				}
-
 				return TupleElementAtIndex<TupleType, TupleElementType, CurrentIndex - 1>::Get(tuple, index);
 			}
 		};
@@ -46,23 +45,20 @@ namespace csv {
 			return TupleElementAtIndex<std::tuple<ColumnTypes...>, ColumnType>::Get(elements_[row_index], column_index);
 		}
 
-		[[nodiscard]] std::string ToString() const {
-			std::ostringstream oss;
-
+		friend std::ostream& operator<<(std::ostream& os, const Csv& csv) {
 			if constexpr (sizeof...(ColumnTypes) > 0) {
 				std::size_t index = 0;
-				for (const auto& tuple : elements_) {
+				for (const auto& tuple : csv.elements_) {
 					std::apply([&](const auto& item, const auto&... items) {
-						oss << item;
-						((oss << ", " << items), ...);
+						os << item;
+						((os << ", " << items), ...);
 					}, tuple);
-					if (index++ < elements_.size() - 1) {
-						oss << std::endl;
+					if (index++ < csv.elements_.size() - 1) {
+						os << std::endl;
 					}
 				}
 			}
-
-			return oss.str();
+			return os;
 		}
 
 	private:
