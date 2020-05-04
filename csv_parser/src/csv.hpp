@@ -85,7 +85,7 @@ namespace csv {
 
 	private:
 		static std::vector<std::tuple<ColumnTypes...>> ParseData(std::iostream& data) {
-			const auto lines = CsvBase::Split(data, '\n');
+			const auto lines = Split(data, '\n');
 			std::vector<std::tuple<ColumnTypes...>> elements;
 			elements.reserve(lines.size());
 
@@ -96,7 +96,7 @@ namespace csv {
 		}
 
 		static std::tuple<ColumnTypes...> ParseLine(const std::string& line) {
-			const auto tokens = CsvBase::Split(line, ',');
+			const auto tokens = Split(line, ',');
 			return ParseTokens(TypeList<ColumnTypes...>{}, tokens, 0);
 		}
 
@@ -138,7 +138,7 @@ namespace csv {
 
 	private:
 		static std::vector<std::vector<T>> ParseData(std::iostream& data) {
-			const auto lines = CsvBase::Split(data, '\n');
+			const auto lines = Split(data, '\n');
 			std::vector<std::vector<T>> elements;
 			elements.reserve(lines.size());
 
@@ -149,7 +149,7 @@ namespace csv {
 		}
 
 		static std::vector<T> ParseLine(const std::string& line) {
-			const auto tokens = CsvBase::Split(line, ',');
+			const auto tokens = Split(line, ',');
 			std::vector<T> elements;
 			elements.reserve(tokens.size());
 
