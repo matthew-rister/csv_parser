@@ -38,7 +38,7 @@ namespace csv {
 		};
 
 	public:
-		explicit Csv(const std::string& data) : elements_{ParseData(data)} {}
+		explicit Csv(std::iostream& data) : elements_{ParseData(data)} {}
 
 		template <typename ColumnType>
 		[[nodiscard]] ColumnType Get(const std::size_t row_index, const std::size_t column_index) const {
@@ -62,7 +62,7 @@ namespace csv {
 		}
 
 	private:
-		static std::vector<std::tuple<ColumnTypes...>> ParseData(const std::string& data) {
+		static std::vector<std::tuple<ColumnTypes...>> ParseData(std::iostream& data) {
 			const auto lines = Split(data, '\n');
 			std::vector<std::tuple<ColumnTypes...>> entries;
 			entries.reserve(lines.size());
@@ -102,15 +102,19 @@ namespace csv {
 			return std::make_tuple(element);
 		}
 
-		static std::vector<std::string> Split(const std::string& line, const char delimiter) {
+		static std::vector<std::string> Split(std::iostream& line_stream, const char delimiter) {
 			std::vector<std::string> tokens;
-			std::istringstream iss{line};
 
 			for (std::string token;
-			     std::getline(iss, token, delimiter);
-			     tokens.push_back(std::move(token))) {}
+			     std::getline(line_stream, token, delimiter);
+			     tokens.push_back(std::move(token))) { }
 
 			return tokens;
+		}
+
+		static std::vector<std::string> Split(const std::string& line, const char delimiter) {
+			std::stringstream line_stream{line};
+			return Split(line_stream, delimiter);
 		}
 
 		std::vector<std::tuple<ColumnTypes...>> elements_;
