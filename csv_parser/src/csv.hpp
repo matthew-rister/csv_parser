@@ -129,7 +129,7 @@ namespace csv {
 	public:
 		explicit Csv(std::iostream& data) : elements_{ParseData(data)} {}
 
-		const T& Get(const std::size_t i, const std::size_t j) const {
+		[[nodiscard]] const T& Get(const std::size_t i, const std::size_t j) const {
 			return elements_[i][j];
 		}
 
