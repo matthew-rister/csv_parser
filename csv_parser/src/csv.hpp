@@ -75,12 +75,12 @@ namespace csv {
 
 		static std::tuple<ColumnTypes...> ParseLine(const std::string& line) {
 			const auto tokens = Split(line, ',');
-			return ParseTokens(TypeList<ColumnTypes...>{}, tokens);
+			return ParseTokens(TypeList<ColumnTypes...>{}, tokens, 0);
 		}
 
 		template <typename ColumnType, typename... Rest>
 		static std::tuple<ColumnType, Rest...> ParseTokens(
-			const TypeList<ColumnType, Rest...>&, const std::vector<std::string>& tokens, const std::size_t index = 0) {
+			const TypeList<ColumnType, Rest...>&, const std::vector<std::string>& tokens, const std::size_t index) {
 
 			return std::tuple_cat(
 				ParseToken<ColumnType>(tokens[index]),
