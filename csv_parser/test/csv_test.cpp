@@ -20,8 +20,8 @@ TEST_CASE("CSV Initialization", "[csv]") {
 		const Csv<int32_t> csv{data};
 
 		SECTION("Accessing CSV elements returns the correct element") {
-			for (int32_t i = 0; i < 3; ++i) {
-				for (int32_t j = 0; j < 3; ++j) {
+			for (auto i = 0; i < 3; ++i) {
+				for (auto j = 0; j < 3; ++j) {
 					REQUIRE(csv.Get(i, j) == 3 * i + j);
 				}
 			}
