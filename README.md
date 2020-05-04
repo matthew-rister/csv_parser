@@ -2,11 +2,9 @@
 
 ## Usage
 
-### Heterogeneous Data
+### Homogeneous Data
 
 ```C++
-#include <sstream>
-
 #include "csv.hpp"
 
 using namespace csv;
@@ -22,11 +20,9 @@ const auto sepal_length = csv.Get(0, 0)
 const auto petal_width = csv.Get(2, 3);
 ```
 
-### Homogeneous Data
+### Heterogeneous Data
 
 ```C++
-#include <sstream>
-
 #include "csv.hpp"
 
 using namespace csv;
