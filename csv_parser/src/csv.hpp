@@ -28,8 +28,7 @@ namespace csv {
 
 			for (std::string token;
 				std::getline(line_stream, token, delimiter);
-				tokens.push_back(std::move(token))) {
-			}
+				tokens.push_back(std::move(token))) {}
 
 			return tokens;
 		}
