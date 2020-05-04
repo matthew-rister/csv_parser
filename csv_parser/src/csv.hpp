@@ -19,7 +19,7 @@ namespace csv {
 
 		template <typename TupleType, typename TupleElementType, std::int32_t CurrentIndex = std::tuple_size<TupleType>::value - 1>
 		struct TupleElementAtIndex {
-			static TupleElementType Get(const TupleType& tuple, const std::size_t index) {
+			static const TupleElementType& Get(const TupleType& tuple, const std::size_t index) {
 				if (index == CurrentIndex) {
 					using ActualTupleElementType = typename std::tuple_element<CurrentIndex, TupleType>::type;
 					if constexpr (std::is_same<TupleElementType, ActualTupleElementType>::value) {
@@ -36,7 +36,7 @@ namespace csv {
 
 		template <typename TupleType, typename TupleElementType>
 		struct TupleElementAtIndex<TupleType, TupleElementType, static_cast<std::int32_t>(-1)> {
-			static TupleElementType Get(const TupleType&, const std::size_t) {
+			static const TupleElementType& Get(const TupleType&, const std::size_t) {
 				throw std::runtime_error{"Tuple index out of bounds"};
 			}
 		};
@@ -45,7 +45,7 @@ namespace csv {
 		explicit Csv(std::iostream& data) : elements_{ParseData(data)} {}
 
 		template <typename ColumnType>
-		[[nodiscard]] ColumnType Get(const std::size_t row_index, const std::size_t column_index) const {
+		[[nodiscard]] const ColumnType& Get(const std::size_t row_index, const std::size_t column_index) const {
 			return TupleElementAtIndex<std::tuple<ColumnTypes...>, ColumnType>::Get(elements_[row_index], column_index);
 		}
 
