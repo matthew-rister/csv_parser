@@ -12,18 +12,22 @@ TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 	}
 
 	SECTION("Parsing an input sream with multiple rows and columns is correct") {
-		std::stringstream data;
-		data << "0, 1, 2" << std::endl
-			<< "3, 4, 5" << std::endl
-			<< "6, 7, 8";
-
-		const Csv<int32_t> csv{data};
+		const std::string input{"0, 1, 2\n3, 4, 5\n6, 7, 8"};
+		std::stringstream input_stream{input};
+		const Csv<int32_t> csv{input_stream};
 
 		for (auto i = 0; i < 3; ++i) {
 			for (auto j = 0; j < 3; ++j) {
 				REQUIRE(csv.Get(i, j) == 3 * i + j);
 			}
 		}
+	}
+
+	SECTION("Writing a CSV to an output stream is identical to its input") {
+		const std::string input{"0, 1, 2\n3, 4, 5\n6, 7, 8"};
+		std::stringstream input_stream{input};
+		const Csv<int> csv{input_stream};
+		REQUIRE(csv.ToString() == input);
 	}
 }
 
@@ -35,12 +39,9 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 	}
 
 	SECTION("Parsing an input sream with multiple rows and columns") {
-		std::stringstream data;
-		data << "a, 3.141, 42, true" << std::endl
-			<< "b, 2.718, 0, false" << std::endl
-			<< "c, 1.618, 7, true";
-
-		const Csv<char, double, int32_t, bool> csv{data};
+		const std::string input{"a, 3.141, 42, true\nb, 2.718, 0, false\nc, 1.618, 7, true"};
+		std::stringstream input_stream{input};
+		const Csv<char, double, int32_t, bool> csv{input_stream};
 
 		SECTION("Character parsing is correct") {
 			REQUIRE(csv.Get<char>(0, 0) == 'a');
