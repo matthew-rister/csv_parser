@@ -12,18 +12,18 @@ namespace csv {
 	class IndexOutOfBoundsException final : public std::exception {
 
 	public:
-		explicit IndexOutOfBoundsException(const std::size_t index)
-			: index_{index} {}
-
-		char const* what() const override {
+		explicit IndexOutOfBoundsException(const std::size_t index) {
 			std::stringstream oss;
-			oss << "Index out of bounds: " << index_;
-			const auto what = oss.str();
-			return what.c_str();
+			oss << "Index out of bounds: " << index;
+			message_ = oss.str();
+		}
+
+		[[nodiscard]] char const* what() const override {
+			return message_.c_str();
 		}
 
 	private:
-		size_t index_;
+		std::string message_;
 	};
 
 	class CsvBase {
