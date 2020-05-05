@@ -7,8 +7,8 @@ using namespace csv;
 TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 
 	SECTION("Parsing an empty input stream does not throw an exception") {
-		std::stringstream data;
-		REQUIRE_NOTHROW(Csv<int32_t>{data});
+		std::stringstream input_stream;
+		REQUIRE_NOTHROW(Csv<int32_t>{input_stream});
 	}
 
 	SECTION("Parsing an input sream with multiple rows and columns is correct") {
@@ -48,8 +48,8 @@ TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 TEST_CASE("CSV parsing with heterogeneous data") {
 
 	SECTION("Parsing an empty input stream does not throw an exception") {
-		std::stringstream data;
-		REQUIRE_NOTHROW(Csv<>{data});
+		std::stringstream input_stream;
+		REQUIRE_NOTHROW(Csv<>{input_stream});
 	}
 
 	SECTION("Parsing an input sream with multiple rows and columns") {
@@ -104,9 +104,9 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 	}
 
 	SECTION("Error handling") {
-		std::stringstream input_stream;
-		input_stream << "a, 1, 3.14\nb, 2, 2,71\nc, 3, 1.618";
-		const Csv<char, int, double> csv{input_stream};
+		const std::string input{"a, 3.141, 42, true\nb, 2.718, 0, false\nc, 1.618, 7, true"};
+		std::stringstream input_stream{input};
+		const Csv<char, double, int32_t, bool> csv{input_stream};
 
 		SECTION("Attempting to access an element with an invalid template argument throws an exception") {
 			REQUIRE_THROWS(csv.get<double>(0, 0));
@@ -117,7 +117,7 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 		}
 
 		SECTION("Attempting to access an element with an invalid column index throws an exception") {
-			REQUIRE_THROWS_AS(csv.get<double>(0, 3), IndexOutOfBoundsException);
+			REQUIRE_THROWS_AS(csv.get<double>(0, 4), IndexOutOfBoundsException);
 		}
 	}
 
