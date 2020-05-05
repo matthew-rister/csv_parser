@@ -1,12 +1,30 @@
 #pragma once
 
 #include <algorithm>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace csv {
+
+	class IndexOutOfBoundsException final : public std::exception {
+
+	public:
+		explicit IndexOutOfBoundsException(const std::size_t index)
+			: index_{index} {}
+
+		char const* what() const override {
+			std::stringstream oss;
+			oss << "Index out of bounds: " << index_;
+			const auto what = oss.str();
+			return what.c_str();
+		}
+
+	private:
+		size_t index_;
+	};
 
 	class CsvBase {
 
@@ -51,9 +69,7 @@ namespace csv {
 					if constexpr (std::is_same<TupleElementType, ActualTupleElementType>::value) {
 						return std::get<CurrentIndex>(tuple);
 					} else {
-						std::ostringstream oss;
-						oss << "Tuple element type mismatch at index " << column_index;
-						throw std::runtime_error{oss.str()};
+						throw std::runtime_error{"Tuple element type mismatch"};
 					}
 				}
 				return TupleElementAtIndex<TupleType, TupleElementType, CurrentIndex - 1>::get(tuple, column_index);
@@ -63,9 +79,7 @@ namespace csv {
 		template <typename TupleType, typename TupleElementType>
 		struct TupleElementAtIndex<TupleType, TupleElementType, static_cast<std::int32_t>(-1)> {
 			static const TupleElementType& get(const TupleType&, const std::size_t column_index) {
-				std::ostringstream oss;
-				oss << "Column index out of bounds: " << column_index;
-				throw std::runtime_error{oss.str()};
+				throw IndexOutOfBoundsException{column_index};
 			}
 		};
 
@@ -75,9 +89,7 @@ namespace csv {
 		template <typename ColumnType>
 		[[nodiscard]] const ColumnType& get(const std::size_t row_index, const std::size_t column_index) const {
 			if (row_index >= elements_.size()) {
-				std::ostringstream oss;
-				oss << "Row index out of bounds: " << row_index;
-				throw std::runtime_error{oss.str()};
+				throw IndexOutOfBoundsException{row_index};
 			}
 			return TupleElementAtIndex<std::tuple<ColumnTypes...>, ColumnType>::get(elements_[row_index], column_index);
 		}
@@ -137,6 +149,12 @@ namespace csv {
 		explicit Csv(std::iostream& data) : elements_{parse_data(data)} {}
 
 		[[nodiscard]] const T& get(const std::size_t row_index, const std::size_t column_index) const {
+			if (row_index >= elements_.size()) {
+				throw IndexOutOfBoundsException{row_index};
+			}
+			if (column_index >= elements_[row_index].size()) {
+				throw IndexOutOfBoundsException{column_index};
+			}
 			return elements_[row_index][column_index];
 		}
 

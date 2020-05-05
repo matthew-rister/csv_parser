@@ -99,11 +99,11 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 		}
 
 		SECTION("Attempting to access an element with an invalid row index throws an exception") {
-			REQUIRE_THROWS(csv.get<char>(3, 0));
+			REQUIRE_THROWS_AS(csv.get<char>(3, 0), IndexOutOfBoundsException);
 		}
 
 		SECTION("Attempting to access an element with an invalid column index throws an exception") {
-			REQUIRE_THROWS(csv.get<double>(0, 3));
+			REQUIRE_THROWS_AS(csv.get<double>(0, 3), IndexOutOfBoundsException);
 		}
 	}
 
