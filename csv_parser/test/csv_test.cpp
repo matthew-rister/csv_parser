@@ -29,11 +29,11 @@ TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 		const Csv<int32_t> csv{input_stream};
 
 		SECTION("Attempting to access an element with an invalid row index throws an exception") {
-			REQUIRE_THROWS_AS(csv.get(3, 0), IndexOutOfBoundsException);
+			REQUIRE_THROWS(csv.get(3, 0));
 		}
 
 		SECTION("Attempting to access an element with an invalid column index throws an exception") {
-			REQUIRE_THROWS_AS(csv.get(0, 3), IndexOutOfBoundsException);
+			REQUIRE_THROWS(csv.get(0, 3));
 		}
 	}
 
@@ -113,11 +113,11 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 		}
 
 		SECTION("Attempting to access an element with an invalid row index throws an exception") {
-			REQUIRE_THROWS_AS(csv.get<char>(3, 0), IndexOutOfBoundsException);
+			REQUIRE_THROWS(csv.get<char>(3, 0));
 		}
 
 		SECTION("Attempting to access an element with an invalid column index throws an exception") {
-			REQUIRE_THROWS_AS(csv.get<double>(0, 4), IndexOutOfBoundsException);
+			REQUIRE_THROWS(csv.get<double>(0, 4));
 		}
 	}
 
