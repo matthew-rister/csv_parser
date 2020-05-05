@@ -89,6 +89,24 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 		}
 	}
 
+	SECTION("Error handling") {
+		std::stringstream input_stream;
+		input_stream << "a, 1, 3.14\nb, 2, 2,71\nc, 3, 1.618";
+		const Csv<char, int, double> csv{input_stream};
+
+		SECTION("Attempting to access an element with an invalid template argument throws an exception") {
+			REQUIRE_THROWS(csv.get<double>(0, 0));
+		}
+
+		SECTION("Attempting to access an element with an invalid row index throws an exception") {
+			REQUIRE_THROWS(csv.get<char>(3, 0));
+		}
+
+		SECTION("Attempting to access an element with an invalid column index throws an exception") {
+			REQUIRE_THROWS(csv.get<double>(0, 3));
+		}
+	}
+
 	SECTION("Writing a CSV to an output stream is identical to its input") {
 		const std::string input{"a, 3.141, 42, true\nb, 2.718, 0, false\nc, 1.618, 7, true"};
 		std::stringstream input_stream{input};
