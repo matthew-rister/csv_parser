@@ -13,7 +13,7 @@ namespace csv {
 
 	public:
 		explicit IndexOutOfBoundsException(const std::size_t index) {
-			std::stringstream oss;
+			std::ostringstream oss;
 			oss << "Index out of bounds: " << index;
 			message_ = oss.str();
 		}
