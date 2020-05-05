@@ -98,8 +98,8 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 		}
 
 		SECTION("Parsing double-precision floating-point numeric limits is correct") {
-			REQUIRE(csv.get<double>(0, 1) == Approx{ double_max });
-			REQUIRE(csv.get<double>(1, 1) == Approx{ double_min });
+			REQUIRE(csv.get<double>(0, 1) == Approx{double_max});
+			REQUIRE(csv.get<double>(1, 1) == Approx{double_min});
 		}
 	}
 
@@ -127,6 +127,6 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 		const Csv<char, double, int32_t, bool> csv{input_stream};
 
 		// TODO: fix output stream conversion for booleans
-		REQUIRE(csv.to_string() == std::string{ "a, 3.141, 42, 1\nb, 2.718, 0, 0\nc, 1.618, 7, 1" });
+		REQUIRE(csv.to_string() == std::string{"a, 3.141, 42, 1\nb, 2.718, 0, 0\nc, 1.618, 7, 1"});
 	}
 }
