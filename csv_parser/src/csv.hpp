@@ -18,9 +18,7 @@ namespace csv {
 			message_ = oss.str();
 		}
 
-		[[nodiscard]] char const* what() const override {
-			return message_.c_str();
-		}
+		[[nodiscard]] char const* what() const override { return message_.c_str(); }
 
 	private:
 		std::string message_;
