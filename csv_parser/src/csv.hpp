@@ -45,25 +45,27 @@ namespace csv {
 
 		template <typename TupleType, typename TupleElementType, std::int32_t CurrentIndex = std::tuple_size<TupleType>::value - 1>
 		struct TupleElementAtIndex {
-			static const TupleElementType& get(const TupleType& tuple, const std::size_t index) {
-				if (index == CurrentIndex) {
+			static const TupleElementType& get(const TupleType& tuple, const std::size_t column_index) {
+				if (column_index == CurrentIndex) {
 					using ActualTupleElementType = typename std::tuple_element<CurrentIndex, TupleType>::type;
 					if constexpr (std::is_same<TupleElementType, ActualTupleElementType>::value) {
 						return std::get<CurrentIndex>(tuple);
 					} else {
 						std::ostringstream oss;
-						oss << "Tuple element type mismatch at index " << index;
+						oss << "Tuple element type mismatch at index " << column_index;
 						throw std::runtime_error{oss.str()};
 					}
 				}
-				return TupleElementAtIndex<TupleType, TupleElementType, CurrentIndex - 1>::get(tuple, index);
+				return TupleElementAtIndex<TupleType, TupleElementType, CurrentIndex - 1>::get(tuple, column_index);
 			}
 		};
 
 		template <typename TupleType, typename TupleElementType>
 		struct TupleElementAtIndex<TupleType, TupleElementType, static_cast<std::int32_t>(-1)> {
-			static const TupleElementType& get(const TupleType&, const std::size_t) {
-				throw std::runtime_error{"Tuple index out of bounds"};
+			static const TupleElementType& get(const TupleType&, const std::size_t column_index) {
+				std::ostringstream oss;
+				oss << "Column index out of bounds: " << column_index;
+				throw std::runtime_error{oss.str()};
 			}
 		};
 
@@ -72,6 +74,11 @@ namespace csv {
 
 		template <typename ColumnType>
 		[[nodiscard]] const ColumnType& get(const std::size_t row_index, const std::size_t column_index) const {
+			if (row_index >= elements_.size()) {
+				std::ostringstream oss;
+				oss << "Row index out of bounds: " << row_index;
+				throw std::runtime_error{oss.str()};
+			}
 			return TupleElementAtIndex<std::tuple<ColumnTypes...>, ColumnType>::get(elements_[row_index], column_index);
 		}
 
