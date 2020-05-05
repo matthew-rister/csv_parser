@@ -13,7 +13,7 @@ namespace csv {
 	protected:
 		CsvBase() = default;
 
-		template <typename T> static T ParseToken(const std::string& token) {
+		template <typename T> static T parse_token(const std::string& token) {
 			T element;
 			if constexpr (std::is_same<T, bool>::value) {
 				std::istringstream{token} >> std::boolalpha >> element;
@@ -23,7 +23,7 @@ namespace csv {
 			return element;
 		}
 
-		static std::vector<std::string> Split(std::iostream& line_stream, const char delimiter) {
+		static std::vector<std::string> split(std::iostream& line_stream, const char delimiter) {
 			std::vector<std::string> tokens;
 
 			for (std::string token;
@@ -33,9 +33,9 @@ namespace csv {
 			return tokens;
 		}
 
-		static std::vector<std::string> Split(const std::string& line, const char delimiter) {
+		static std::vector<std::string> split(const std::string& line, const char delimiter) {
 			std::stringstream line_stream{line};
-			return Split(line_stream, delimiter);
+			return split(line_stream, delimiter);
 		}
 	};
 
@@ -45,7 +45,7 @@ namespace csv {
 
 		template <typename TupleType, typename TupleElementType, std::int32_t CurrentIndex = std::tuple_size<TupleType>::value - 1>
 		struct TupleElementAtIndex {
-			static const TupleElementType& Get(const TupleType& tuple, const std::size_t index) {
+			static const TupleElementType& get(const TupleType& tuple, const std::size_t index) {
 				if (index == CurrentIndex) {
 					using ActualTupleElementType = typename std::tuple_element<CurrentIndex, TupleType>::type;
 					if constexpr (std::is_same<TupleElementType, ActualTupleElementType>::value) {
@@ -56,26 +56,26 @@ namespace csv {
 						throw std::runtime_error{oss.str()};
 					}
 				}
-				return TupleElementAtIndex<TupleType, TupleElementType, CurrentIndex - 1>::Get(tuple, index);
+				return TupleElementAtIndex<TupleType, TupleElementType, CurrentIndex - 1>::get(tuple, index);
 			}
 		};
 
 		template <typename TupleType, typename TupleElementType>
 		struct TupleElementAtIndex<TupleType, TupleElementType, static_cast<std::int32_t>(-1)> {
-			static const TupleElementType& Get(const TupleType&, const std::size_t) {
+			static const TupleElementType& get(const TupleType&, const std::size_t) {
 				throw std::runtime_error{"Tuple index out of bounds"};
 			}
 		};
 
 	public:
-		explicit Csv(std::iostream& data) : elements_{ParseData(data)} {}
+		explicit Csv(std::iostream& data) : elements_{parse_data(data)} {}
 
 		template <typename ColumnType>
-		[[nodiscard]] const ColumnType& Get(const std::size_t row_index, const std::size_t column_index) const {
-			return TupleElementAtIndex<std::tuple<ColumnTypes...>, ColumnType>::Get(elements_[row_index], column_index);
+		[[nodiscard]] const ColumnType& get(const std::size_t row_index, const std::size_t column_index) const {
+			return TupleElementAtIndex<std::tuple<ColumnTypes...>, ColumnType>::get(elements_[row_index], column_index);
 		}
 
-		[[nodiscard]] std::string ToString() const {
+		[[nodiscard]] std::string to_string() const {
 			std::ostringstream oss;
 
 			if constexpr (sizeof...(ColumnTypes) > 0) {
@@ -92,32 +92,32 @@ namespace csv {
 		}
 
 	private:
-		static std::vector<std::tuple<ColumnTypes...>> ParseData(std::iostream& data) {
-			const auto lines = Split(data, '\n');
+		static std::vector<std::tuple<ColumnTypes...>> parse_data(std::iostream& data) {
+			const auto lines = split(data, '\n');
 			std::vector<std::tuple<ColumnTypes...>> elements;
 			elements.reserve(lines.size());
 
 			std::transform(std::cbegin(lines), std::cend(lines), std::back_inserter(elements),
-				[](const auto& line) { return ParseLine(line); });
+				[](const auto& line) { return parse_line(line); });
 
 			return elements;
 		}
 
-		static std::tuple<ColumnTypes...> ParseLine(const std::string& line) {
-			const auto tokens = Split(line, ',');
-			return ParseTokens(TypeList<ColumnTypes...>{}, tokens, 0);
+		static std::tuple<ColumnTypes...> parse_line(const std::string& line) {
+			const auto tokens = split(line, ',');
+			return parse_tokens(TypeList<ColumnTypes...>{}, tokens, 0);
 		}
 
 		template <typename ColumnType, typename... Rest>
-		static std::tuple<ColumnType, Rest...> ParseTokens(
+		static std::tuple<ColumnType, Rest...> parse_tokens(
 			const TypeList<ColumnType, Rest...>&, const std::vector<std::string>& tokens, const std::size_t index) {
 
 			return std::tuple_cat(
-				std::make_tuple(ParseToken<ColumnType>(tokens[index])),
-				ParseTokens(TypeList<Rest...>{}, tokens, index + 1));
+				std::make_tuple(parse_token<ColumnType>(tokens[index])),
+				parse_tokens(TypeList<Rest...>{}, tokens, index + 1));
 		}
 
-		static std::tuple<> ParseTokens(const TypeList<>&, const std::vector<std::string>&, const std::size_t) {
+		static std::tuple<> parse_tokens(const TypeList<>&, const std::vector<std::string>&, const std::size_t) {
 			return {};
 		}
 
@@ -127,13 +127,13 @@ namespace csv {
 	template <typename T> class Csv<T> final : public CsvBase {
 
 	public:
-		explicit Csv(std::iostream& data) : elements_{ParseData(data)} {}
+		explicit Csv(std::iostream& data) : elements_{parse_data(data)} {}
 
-		[[nodiscard]] const T& Get(const std::size_t row_index, const std::size_t column_index) const {
+		[[nodiscard]] const T& get(const std::size_t row_index, const std::size_t column_index) const {
 			return elements_[row_index][column_index];
 		}
 
-		[[nodiscard]] std::string ToString() const {
+		[[nodiscard]] std::string to_string() const {
 			std::ostringstream oss;
 			for (std::size_t i = 0; i < elements_.size(); ++i) {
 				for (std::size_t j = 0; j < elements_[i].size(); ++j) {
@@ -145,24 +145,24 @@ namespace csv {
 		}
 
 	private:
-		static std::vector<std::vector<T>> ParseData(std::iostream& data) {
-			const auto lines = Split(data, '\n');
+		static std::vector<std::vector<T>> parse_data(std::iostream& data) {
+			const auto lines = split(data, '\n');
 			std::vector<std::vector<T>> elements;
 			elements.reserve(lines.size());
 
 			std::transform(std::cbegin(lines), std::cend(lines), std::back_inserter(elements),
-				[](const auto& line) { return ParseLine(line); });
+				[](const auto& line) { return parse_line(line); });
 
 			return elements;
 		}
 
-		static std::vector<T> ParseLine(const std::string& line) {
-			const auto tokens = Split(line, ',');
+		static std::vector<T> parse_line(const std::string& line) {
+			const auto tokens = split(line, ',');
 			std::vector<T> values;
 			values.reserve(tokens.size());
 
 			std::transform(std::cbegin(tokens), std::cend(tokens), std::back_inserter(values),
-				[](const auto& token) { return ParseToken<T>(token); });
+				[](const auto& token) { return parse_token<T>(token); });
 
 			return values;
 		}

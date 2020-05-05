@@ -16,8 +16,8 @@ data << "5.1, 3.5, 1.4, 0.2"
 
 const Csv<double> csv{data};
 
-const auto sepal_length = csv.Get(0, 0)
-const auto petal_width = csv.Get(2, 3);
+const auto sepal_length = csv.get(0, 0)
+const auto petal_width = csv.get(2, 3);
 ```
 
 ### Heterogeneous Data
@@ -34,8 +34,8 @@ data << "a, 3.14, 42, true"
 
 const Csv<char, double, int32_t, bool> csv{data};
 
-const auto meaning_of_life = csv.Get<int32_t>(0, 2);
-const auto e = csv.Get<double>(2, 1);
+const auto meaning_of_life = csv.get<int32_t>(0, 2);
+const auto e = csv.get<double>(2, 1);
 ```
 
 ## Build
