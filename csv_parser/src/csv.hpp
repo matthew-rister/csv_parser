@@ -96,7 +96,6 @@ namespace csv {
 
 		[[nodiscard]] std::string to_string() const {
 			std::ostringstream oss;
-
 			if constexpr (sizeof...(ColumnTypes) > 0) {
 				for (std::size_t i = 0; i < elements_.size(); ++i) {
 					std::apply([&](const auto& item, const auto&... items) {
@@ -106,7 +105,6 @@ namespace csv {
 					oss << (i < elements_.size() - 1 ? "\n" : "");
 				}
 			}
-
 			return oss.str();
 		}
 
