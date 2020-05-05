@@ -23,6 +23,20 @@ TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 		}
 	}
 
+	SECTION("Error handling") {
+		const std::string input{"0, 1, 2\n3, 4, 5\n6, 7, 8"};
+		std::stringstream input_stream{input};
+		const Csv<int32_t> csv{input_stream};
+
+		SECTION("Attempting to access an element with an invalid row index throws an exception") {
+			REQUIRE_THROWS_AS(csv.get(3, 0), IndexOutOfBoundsException);
+		}
+
+		SECTION("Attempting to access an element with an invalid column index throws an exception") {
+			REQUIRE_THROWS_AS(csv.get(0, 3), IndexOutOfBoundsException);
+		}
+	}
+
 	SECTION("Writing a CSV to an output stream is identical to its input") {
 		const std::string input{"0, 1, 2\n3, 4, 5\n6, 7, 8"};
 		std::stringstream input_stream{input};
