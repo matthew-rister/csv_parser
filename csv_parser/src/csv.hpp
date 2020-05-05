@@ -63,8 +63,8 @@ namespace csv {
 
 		template <typename TupleType, typename TupleElementType, std::int32_t CurrentIndex = std::tuple_size<TupleType>::value - 1>
 		struct TupleElementAtIndex {
-			static const TupleElementType& get(const TupleType& tuple, const std::size_t column_index) {
-				if (column_index == CurrentIndex) {
+			static const TupleElementType& get(const TupleType& tuple, const std::size_t index) {
+				if (index == CurrentIndex) {
 					using ActualTupleElementType = typename std::tuple_element<CurrentIndex, TupleType>::type;
 					if constexpr (std::is_same<TupleElementType, ActualTupleElementType>::value) {
 						return std::get<CurrentIndex>(tuple);
@@ -72,14 +72,14 @@ namespace csv {
 						throw std::runtime_error{"Tuple element type mismatch"};
 					}
 				}
-				return TupleElementAtIndex<TupleType, TupleElementType, CurrentIndex - 1>::get(tuple, column_index);
+				return TupleElementAtIndex<TupleType, TupleElementType, CurrentIndex - 1>::get(tuple, index);
 			}
 		};
 
 		template <typename TupleType, typename TupleElementType>
 		struct TupleElementAtIndex<TupleType, TupleElementType, static_cast<std::int32_t>(-1)> {
-			static const TupleElementType& get(const TupleType&, const std::size_t column_index) {
-				throw IndexOutOfBoundsException{column_index};
+			static const TupleElementType& get(const TupleType&, const std::size_t index) {
+				throw IndexOutOfBoundsException{index};
 			}
 		};
 
