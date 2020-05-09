@@ -8,5 +8,5 @@ else()
   add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
-include_directories(extern/ src/)
+include_directories(src/ extern/)
 add_executable (csv_test test/csv_test.cpp)
