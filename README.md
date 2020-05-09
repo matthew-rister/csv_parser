@@ -23,7 +23,7 @@ int main() {
         << "4.9, 3.0, 1.4, 0.2" << std::endl
         << "4.7, 3.2, 1.3, 0.2";
 
-    const Csv<double> csv{data};
+    const Csv<double> csv{data.str()};
     std::cout << csv.get(2, 3);
 
     return EXIT_SUCCESS;
@@ -49,7 +49,7 @@ int main() {
         << "b, 1.618, 0, false" << std::endl
         << "c, 2.71, 7, true";
 
-    const Csv<char, double, int32_t, bool> csv{data};
+    const Csv<char, double, int32_t, bool> csv{data.str()};
     std::cout << csv.get<double>(0, 2);
 
     return EXIT_SUCCESS;
@@ -58,7 +58,7 @@ int main() {
 
 ## Build
 
-To build the project, you must have cmake 3 installed and a compiler that supports the C++17 language standard. You can then build from your favorite IDE or by running `cmake -GNinja . && ninja` from the command line.
+To build the project, you must have cmake 3 installed and a compiler that supports the C++17 language standard. You can then build from your favorite IDE or by running `cmake -G Ninja . && ninja` from the command line.
 
 ## Test
 
