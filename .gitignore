@@ -29,4 +29,5 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 .vs
-out
+.ninja_deps
+.ninja_log
