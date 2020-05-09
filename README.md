@@ -1,41 +1,59 @@
 # CSV Parser
 
+A single-header CSV parser which supports declarative parsing heterogeneous data types.
+
 ## Usage
 
 ### Homogeneous Data
 
+For a CSV data which consists of a homogeneous data, it's sufficient to instantiate a `Csv` with a single template parameter.
+
 ```C++
+#include <iostream>
+#include <sstream>
+
 #include "csv.hpp"
 
 using namespace csv;
 
-std::stringstream data;
-data << "5.1, 3.5, 1.4, 0.2"
-    << "4.9, 3.0, 1.4, 0.2"
-    << "4.7, 3.2, 1.3, 0.2"
+int main() {
 
-const Csv<double> csv{data};
+    std::stringstream data;
+    data << "5.1, 3.5, 1.4, 0.2" << std::endl
+        << "4.9, 3.0, 1.4, 0.2" << std::endl
+        << "4.7, 3.2, 1.3, 0.2";
 
-const auto sepal_length = csv.get(0, 0)
-const auto petal_width = csv.get(2, 3);
+    const Csv<double> csv{data};
+    std::cout << csv.get(2, 3);
+
+    return EXIT_SUCCESS;
+}
 ```
 
 ### Heterogeneous Data
 
+For a CSV which consists of heterogeneous data, you can declare the data type for each column as a template parameter.
+
 ```C++
+#include <iostream>
+#include <sstream>
+
 #include "csv.hpp"
 
 using namespace csv;
 
-std::stringstream data;
-data << "a, 3.14, 42, true"
-    << "b, 1.618, 0, false"
-    << "c, 2.71, 7, true";
+int main() {
 
-const Csv<char, double, int32_t, bool> csv{data};
+    std::stringstream data;
+    data << "a, 3.14, 42, true" << std::endl
+        << "b, 1.618, 0, false" << std::endl
+        << "c, 2.71, 7, true";
 
-const auto meaning_of_life = csv.get<int32_t>(0, 2);
-const auto e = csv.get<double>(2, 1);
+    const Csv<char, double, int32_t, bool> csv{data};
+    std::cout << csv.get<double>(0, 2);
+
+    return EXIT_SUCCESS;
+}
 ```
 
 ## Build
