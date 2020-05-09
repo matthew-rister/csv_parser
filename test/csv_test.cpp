@@ -8,15 +8,14 @@ using namespace csv;
 
 TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 
-	SECTION("Parsing an empty input stream does not throw an exception") {
-		std::stringstream input_stream;
-		REQUIRE_NOTHROW(Csv<int32_t>{input_stream});
+	SECTION("Parsing an empty string does not throw an exception") {
+		std::string data;
+		REQUIRE_NOTHROW(Csv<int32_t>{data});
 	}
 
-	SECTION("Parsing an input sream with multiple rows and columns is correct") {
-		const std::string input{"0, 1, 2\n3, 4, 5\n6, 7, 8"};
-		std::stringstream input_stream{input};
-		const Csv<int32_t> csv{input_stream};
+	SECTION("Parsing a CSV with multiple rows and columns is correct") {
+		const std::string data{"0, 1, 2\n3, 4, 5\n6, 7, 8"};
+		const Csv<int32_t> csv{data};
 
 		for (auto i = 0; i < 3; ++i) {
 			for (auto j = 0; j < 3; ++j) {
@@ -26,9 +25,8 @@ TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 	}
 
 	SECTION("Error handling") {
-		const std::string input{"0, 1, 2\n3, 4, 5\n6, 7, 8"};
-		std::stringstream input_stream{input};
-		const Csv<int32_t> csv{input_stream};
+		const std::string data{"0, 1, 2\n3, 4, 5\n6, 7, 8"};
+		const Csv<int32_t> csv{data};
 
 		SECTION("Attempting to access an element with an invalid row index throws an exception") {
 			REQUIRE_THROWS(csv.get(3, 0));
@@ -40,24 +38,22 @@ TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 	}
 
 	SECTION("Writing a CSV to an output stream is identical to its input") {
-		const std::string input{"0, 1, 2\n3, 4, 5\n6, 7, 8"};
-		std::stringstream input_stream{input};
-		const Csv<int> csv{input_stream};
-		REQUIRE(csv.to_string() == input);
+		const std::string data{"0, 1, 2\n3, 4, 5\n6, 7, 8"};
+		const Csv<int> csv{data};
+		REQUIRE(csv.to_string() == data);
 	}
 }
 
 TEST_CASE("CSV parsing with heterogeneous data") {
 
-	SECTION("Parsing an empty input stream does not throw an exception") {
-		std::stringstream input_stream;
-		REQUIRE_NOTHROW(Csv<>{input_stream});
+	SECTION("Parsing an empty string does not throw an exception") {
+		std::string data;
+		REQUIRE_NOTHROW(Csv<>{data});
 	}
 
-	SECTION("Parsing an input sream with multiple rows and columns") {
-		const std::string input{"a, 3.141, 42, true\nb, 2.718, 0, false\nc, 1.618, 7, true"};
-		std::stringstream input_stream{input};
-		const Csv<char, double, int32_t, bool> csv{input_stream};
+	SECTION("Parsing a CSV with multiple rows and columns") {
+		const std::string data{"a, 3.141, 42, true\nb, 2.718, 0, false\nc, 1.618, 7, true"};
+		const Csv<char, double, int32_t, bool> csv{ data };
 
 		SECTION("Character parsing is correct") {
 			REQUIRE(csv.get<char>(0, 0) == 'a');
@@ -84,15 +80,15 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 		}
 	}
 
-	SECTION("Parsing an input stream with numeric limits") {
+	SECTION("Parsing a CSV with numeric limits") {
 		constexpr auto int64_t_max = std::numeric_limits<int64_t>::max();
 		constexpr auto int64_t_min = std::numeric_limits<int64_t>::min();
 		constexpr auto double_max = std::numeric_limits<double>::max();
 		constexpr auto double_min = std::numeric_limits<double>::max();
 
-		std::stringstream input_stream;
-		input_stream << int64_t_max << ", " << double_max << '\n' << int64_t_min << ", " << double_min;
-		const Csv<int64_t, double> csv{input_stream};
+		std::stringstream data;
+		data << int64_t_max << ", " << double_max << '\n' << int64_t_min << ", " << double_min;
+		const Csv<int64_t, double> csv{data.str()};
 
 		SECTION("Parsing integer numeric limits is correct") {
 			REQUIRE(csv.get<int64_t>(0, 0) == int64_t_max);
@@ -106,9 +102,8 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 	}
 
 	SECTION("Error handling") {
-		const std::string input{"a, 3.141, 42, true\nb, 2.718, 0, false\nc, 1.618, 7, true"};
-		std::stringstream input_stream{input};
-		const Csv<char, double, int32_t, bool> csv{input_stream};
+		const std::string data{"a, 3.141, 42, true\nb, 2.718, 0, false\nc, 1.618, 7, true"};
+		const Csv<char, double, int32_t, bool> csv{data};
 
 		SECTION("Attempting to access an element with an invalid template argument throws an exception") {
 			REQUIRE_THROWS(csv.get<double>(0, 0));
@@ -124,9 +119,8 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 	}
 
 	SECTION("Writing a CSV to an output stream is identical to its input") {
-		const std::string input{"a, 3.141, 42, true\nb, 2.718, 0, false\nc, 1.618, 7, true"};
-		std::stringstream input_stream{input};
-		const Csv<char, double, int32_t, bool> csv{input_stream};
+		const std::string data{"a, 3.141, 42, true\nb, 2.718, 0, false\nc, 1.618, 7, true"};
+		const Csv<char, double, int32_t, bool> csv{data};
 
 		// TODO: fix output stream conversion for booleans
 		REQUIRE(csv.to_string() == std::string{"a, 3.141, 42, 1\nb, 2.718, 0, 0\nc, 1.618, 7, 1"});

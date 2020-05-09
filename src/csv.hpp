@@ -67,7 +67,7 @@ namespace csv {
 		};
 
 	public:
-		explicit Csv(std::iostream& data) : elements_{parse_data(data)} {}
+		explicit Csv(const std::string& data) : elements_{parse_data(data)} {}
 
 		template <typename ColumnType>
 		[[nodiscard]] const ColumnType& get(const std::size_t row_index, const std::size_t column_index) const {
@@ -92,8 +92,9 @@ namespace csv {
 		}
 
 	private:
-		static std::vector<std::tuple<ColumnTypes...>> parse_data(std::iostream& data) {
-			const auto lines = split(data, '\n');
+		static std::vector<std::tuple<ColumnTypes...>> parse_data(const std::string& data) {
+			std::stringstream data_stream{data};
+			const auto lines = split(data_stream, '\n');
 			std::vector<std::tuple<ColumnTypes...>> elements;
 			elements.reserve(lines.size());
 
@@ -127,7 +128,7 @@ namespace csv {
 	template <typename T> class Csv<T> final : public CsvBase {
 
 	public:
-		explicit Csv(std::iostream& data) : elements_{parse_data(data)} {}
+		explicit Csv(const std::string& data) : elements_{parse_data(data)} {}
 
 		[[nodiscard]] const T& get(const std::size_t row_index, const std::size_t column_index) const {
 			if (row_index >= elements_.size() || column_index >= elements_[row_index].size()) {
@@ -148,8 +149,9 @@ namespace csv {
 		}
 
 	private:
-		static std::vector<std::vector<T>> parse_data(std::iostream& data) {
-			const auto lines = split(data, '\n');
+		static std::vector<std::vector<T>> parse_data(const std::string& data) {
+			std::stringstream data_stream{data};
+			const auto lines = split(data_stream, '\n');
 			std::vector<std::vector<T>> elements;
 			elements.reserve(lines.size());
 
