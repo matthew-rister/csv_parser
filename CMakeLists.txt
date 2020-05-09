@@ -1,5 +1,6 @@
 ﻿cmake_minimum_required (VERSION 3.8)
-project ("csv_parser")
+project (csv_parser LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
 
 if(MSVC)
   add_compile_options(/W4 /WX)
@@ -7,8 +8,5 @@ else()
   add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
-include_directories("${CMAKE_SOURCE_DIR}/extern" "${CMAKE_SOURCE_DIR}/src")
-
-add_executable (csv_parser  "main.cpp" "test/csv_test.cpp")
-
-set_property(TARGET csv_parser PROPERTY CXX_STANDARD 17)
+include_directories(extern/ src/)
+add_executable (csv_test test/csv_test.cpp)
