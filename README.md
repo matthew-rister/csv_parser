@@ -1,6 +1,6 @@
 # CSV Parser
 
-A single-header CSV parser which supports declarative parsing heterogeneous data types.
+A single-header CSV parser which supports parsing heterogeneous data types.
 
 ## Usage
 
