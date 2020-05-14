@@ -79,10 +79,10 @@ namespace csv {
 
 		[[nodiscard]] std::string to_string() const {
 			std::ostringstream oss;
-			const auto index_sequence = std::make_index_sequence<sizeof...(ColumnTypes)>();
-			for (std::size_t row_index = 0; row_index < elements_.size(); ++row_index) {
-				to_string(elements_[row_index], oss, index_sequence);
-				oss << (row_index < elements_.size() - 1 ? "\n" : "");
+			constexpr auto index_sequence = std::make_index_sequence<sizeof...(ColumnTypes)>();
+			for (std::size_t i = 0; i < elements_.size(); ++i) {
+				to_string(oss, elements_[i], index_sequence);
+				oss << (i < elements_.size() - 1 ? "\n" : "");
 			}
 			return oss.str();
 		}
@@ -119,7 +119,7 @@ namespace csv {
 		}
 
 		template <typename TupleType, size_t... ColumnIndex>
-		void to_string(const TupleType& tuple, std::ostream& os, std::index_sequence<ColumnIndex...>) const {
+		void to_string(std::ostream& os, const TupleType& tuple, std::index_sequence<ColumnIndex...>) const {
 			((os << (ColumnIndex == 0 ? "" : ", ")
 				<< (std::is_same<typename std::tuple_element<ColumnIndex, TupleType>::type, bool>::value ? std::boolalpha : std::noboolalpha)
 				<< std::get<ColumnIndex>(tuple)), ...);
