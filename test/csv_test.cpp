@@ -121,8 +121,6 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 	SECTION("Writing a CSV to an output stream is identical to its input") {
 		const std::string data{"a, 3.141, 42, true\nb, 2.718, 0, false\nc, 1.618, 7, true"};
 		const Csv<char, double, int32_t, bool> csv{data};
-
-		// TODO: fix output stream conversion for booleans
-		REQUIRE(csv.to_string() == std::string{"a, 3.141, 42, 1\nb, 2.718, 0, 0\nc, 1.618, 7, 1"});
+		REQUIRE(csv.to_string() == data);
 	}
 }
