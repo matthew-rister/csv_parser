@@ -77,16 +77,6 @@ namespace csv {
 			return TupleElementAtIndex<std::tuple<ColumnTypes...>, ColumnType>::get(elements_[row_index], column_index);
 		}
 
-		[[nodiscard]] std::string to_string() const {
-			std::ostringstream oss;
-			constexpr auto index_sequence = std::make_index_sequence<sizeof...(ColumnTypes)>();
-			for (std::size_t i = 0; i < elements_.size(); ++i) {
-				to_string(oss, elements_[i], index_sequence);
-				oss << (i < elements_.size() - 1 ? "\n" : "");
-			}
-			return oss.str();
-		}
-
 	private:
 		static std::vector<std::tuple<ColumnTypes...>> parse_data(const std::string& data) {
 			std::stringstream data_stream{data};
@@ -118,13 +108,6 @@ namespace csv {
 			return {};
 		}
 
-		template <typename TupleType, size_t... ColumnIndex>
-		void to_string(std::ostream& os, const TupleType& tuple, std::index_sequence<ColumnIndex...>) const {
-			((os << (ColumnIndex == 0 ? "" : ", ")
-				<< (std::is_same<typename std::tuple_element<ColumnIndex, TupleType>::type, bool>::value ? std::boolalpha : std::noboolalpha)
-				<< std::get<ColumnIndex>(tuple)), ...);
-		}
-
 		std::vector<std::tuple<ColumnTypes...>> elements_;
 	};
 
@@ -138,17 +121,6 @@ namespace csv {
 				throw std::runtime_error{"Index out of bounds"};
 			}
 			return elements_[row_index][column_index];
-		}
-
-		[[nodiscard]] std::string to_string() const {
-			std::ostringstream oss;
-			for (std::size_t i = 0; i < elements_.size(); ++i) {
-				for (std::size_t j = 0; j < elements_[i].size(); ++j) {
-					oss << elements_[i][j] << (j < elements_[i].size() - 1 ? ", " : "");
-				}
-				oss << (i < elements_.size() - 1 ? "\n" : "");
-			}
-			return oss.str();
 		}
 
 	private:
