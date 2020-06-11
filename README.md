@@ -6,7 +6,7 @@ A single-header CSV parser which supports parsing heterogeneous data types.
 
 ### Homogeneous Data
 
-For a CSV data which consists of homogeneous data, it's sufficient to instantiate a `Csv` with a single template parameter.
+For a CSV which consists of homogeneous data, it's sufficient to instantiate a `Csv` with a single template parameter.
 
 ```C++
 #include <iostream>
