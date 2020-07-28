@@ -24,7 +24,7 @@ int main() {
         << "4.7, 3.2, 1.3, 0.2";
 
     const Csv<double> csv{data.str()};
-    std::cout << csv.get(2, 3);
+    std::cout << csv.Get(2, 3);
 
     return EXIT_SUCCESS;
 }
@@ -50,7 +50,7 @@ int main() {
         << "c, 2.71, 7, true";
 
     const Csv<char, double, int32_t, bool> csv{data.str()};
-    std::cout << csv.get<double>(0, 2);
+    std::cout << csv.Get<double>(0, 2);
 
     return EXIT_SUCCESS;
 }

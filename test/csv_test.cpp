@@ -19,7 +19,7 @@ TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 
 		for (auto i = 0; i < 3; ++i) {
 			for (auto j = 0; j < 3; ++j) {
-				REQUIRE(csv.get(i, j) == 3 * i + j);
+				REQUIRE(csv.Get(i, j) == 3 * i + j);
 			}
 		}
 	}
@@ -29,11 +29,11 @@ TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 		const Csv<int32_t> csv{data};
 
 		SECTION("Attempting to access an element with an invalid row index throws an exception") {
-			REQUIRE_THROWS(csv.get(3, 0));
+			REQUIRE_THROWS(csv.Get(3, 0));
 		}
 
 		SECTION("Attempting to access an element with an invalid column index throws an exception") {
-			REQUIRE_THROWS(csv.get(0, 3));
+			REQUIRE_THROWS(csv.Get(0, 3));
 		}
 	}
 }
@@ -50,27 +50,27 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 		const Csv<char, double, int32_t, bool> csv{ data };
 
 		SECTION("Character parsing is correct") {
-			REQUIRE(csv.get<char>(0, 0) == 'a');
-			REQUIRE(csv.get<char>(1, 0) == 'b');
-			REQUIRE(csv.get<char>(2, 0) == 'c');
+			REQUIRE(csv.Get<char>(0, 0) == 'a');
+			REQUIRE(csv.Get<char>(1, 0) == 'b');
+			REQUIRE(csv.Get<char>(2, 0) == 'c');
 		}
 
 		SECTION("Double-precision floating-point parsing is correct") {
-			REQUIRE(csv.get<double>(0, 1) == Approx(3.141));
-			REQUIRE(csv.get<double>(1, 1) == Approx(2.718));
-			REQUIRE(csv.get<double>(2, 1) == Approx(1.618));
+			REQUIRE(csv.Get<double>(0, 1) == Approx(3.141));
+			REQUIRE(csv.Get<double>(1, 1) == Approx(2.718));
+			REQUIRE(csv.Get<double>(2, 1) == Approx(1.618));
 		}
 
 		SECTION("Integer parsing is correct") {
-			REQUIRE(csv.get<int32_t>(0, 2) == 42);
-			REQUIRE(csv.get<int32_t>(1, 2) == 0);
-			REQUIRE(csv.get<int32_t>(2, 2) == 7);
+			REQUIRE(csv.Get<int32_t>(0, 2) == 42);
+			REQUIRE(csv.Get<int32_t>(1, 2) == 0);
+			REQUIRE(csv.Get<int32_t>(2, 2) == 7);
 		}
 
 		SECTION("Boolean parsing is correct") {
-			REQUIRE(csv.get<bool>(0, 3) == true);
-			REQUIRE(csv.get<bool>(1, 3) == false);
-			REQUIRE(csv.get<bool>(2, 3) == true);
+			REQUIRE(csv.Get<bool>(0, 3) == true);
+			REQUIRE(csv.Get<bool>(1, 3) == false);
+			REQUIRE(csv.Get<bool>(2, 3) == true);
 		}
 	}
 
@@ -85,13 +85,13 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 		const Csv<int64_t, double> csv{data.str()};
 
 		SECTION("Parsing integer numeric limits is correct") {
-			REQUIRE(csv.get<int64_t>(0, 0) == int64_t_max);
-			REQUIRE(csv.get<int64_t>(1, 0) == int64_t_min);
+			REQUIRE(csv.Get<int64_t>(0, 0) == int64_t_max);
+			REQUIRE(csv.Get<int64_t>(1, 0) == int64_t_min);
 		}
 
 		SECTION("Parsing double-precision floating-point numeric limits is correct") {
-			REQUIRE(csv.get<double>(0, 1) == Approx{double_max});
-			REQUIRE(csv.get<double>(1, 1) == Approx{double_min});
+			REQUIRE(csv.Get<double>(0, 1) == Approx{double_max});
+			REQUIRE(csv.Get<double>(1, 1) == Approx{double_min});
 		}
 	}
 
@@ -100,15 +100,15 @@ TEST_CASE("CSV parsing with heterogeneous data") {
 		const Csv<char, double, int32_t, bool> csv{data};
 
 		SECTION("Attempting to access an element with an invalid template argument throws an exception") {
-			REQUIRE_THROWS(csv.get<double>(0, 0));
+			REQUIRE_THROWS(csv.Get<double>(0, 0));
 		}
 
 		SECTION("Attempting to access an element with an invalid row index throws an exception") {
-			REQUIRE_THROWS(csv.get<char>(3, 0));
+			REQUIRE_THROWS(csv.Get<char>(3, 0));
 		}
 
 		SECTION("Attempting to access an element with an invalid column index throws an exception") {
-			REQUIRE_THROWS(csv.get<double>(0, 4));
+			REQUIRE_THROWS(csv.Get<double>(0, 4));
 		}
 	}
 }
