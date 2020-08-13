@@ -50,7 +50,7 @@ int main() {
         << "c, 2.71, 7, true";
 
     const Csv<char, double, int32_t, bool> csv{data.str()};
-    std::cout << csv.Get<double>(0, 2);
+    std::cout << csv.Get<bool>(1, 3);
 
     return EXIT_SUCCESS;
 }
