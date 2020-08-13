@@ -4,32 +4,6 @@ A single-header CSV parser which supports parsing heterogeneous data types.
 
 ## Usage
 
-### Homogeneous Data
-
-For a CSV which consists of homogeneous data, it's sufficient to instantiate a `Csv` with a single template parameter.
-
-```C++
-#include <iostream>
-#include <sstream>
-
-#include "csv.hpp"
-
-using namespace csv;
-
-int main() {
-
-    std::stringstream data;
-    data << "5.1, 3.5, 1.4, 0.2" << std::endl
-        << "4.9, 3.0, 1.4, 0.2" << std::endl
-        << "4.7, 3.2, 1.3, 0.2";
-
-    const Csv<double> csv{data.str()};
-    std::cout << csv.Get(2, 3);
-
-    return EXIT_SUCCESS;
-}
-```
-
 ### Heterogeneous Data
 
 For a CSV which consists of heterogeneous data, you can declare the data type for each column as a template parameter.
@@ -51,6 +25,32 @@ int main() {
 
     const Csv<char, double, int32_t, bool> csv{data.str()};
     std::cout << csv.Get<bool>(1, 3);
+
+    return EXIT_SUCCESS;
+}
+```
+
+### Homogeneous Data
+
+For a CSV which consists of homogeneous data, it's sufficient to use a single template parameter.
+
+```C++
+#include <iostream>
+#include <sstream>
+
+#include "csv.hpp"
+
+using namespace csv;
+
+int main() {
+
+    std::stringstream data;
+    data << "5.1, 3.5, 1.4, 0.2" << std::endl
+        << "4.9, 3.0, 1.4, 0.2" << std::endl
+        << "4.7, 3.2, 1.3, 0.2";
+
+    const Csv<double> csv{data.str()};
+    std::cout << csv.Get(2, 3);
 
     return EXIT_SUCCESS;
 }
