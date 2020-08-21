@@ -23,7 +23,7 @@ int main() {
         << "b, 1.618, 0, false" << std::endl
         << "c, 2.71, 7, true";
 
-    const Csv<char, double, int32_t, bool> csv{data.str()};
+    const Csv<char, double, std::int32_t, bool> csv{data.str()};
     std::cout << csv.Get<bool>(1, 3);
 
     return EXIT_SUCCESS;
