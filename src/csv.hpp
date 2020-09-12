@@ -1,10 +1,9 @@
 #pragma once
 
 #include <algorithm>
-#include <optional>
 #include <sstream>
 #include <stdexcept>
-#include <string>
+#include <string_view>
 #include <vector>
 
 namespace csv {
@@ -14,29 +13,27 @@ namespace csv {
 	protected:
 		CsvBase() = default;
 
-		template <typename T> static T ParseToken(const std::string& token) {
-			T element;
-			if constexpr (std::is_same<T, bool>::value) {
-				std::istringstream{token} >> std::boolalpha >> element;
-			} else {
-				std::istringstream{token} >> element;
+		static std::vector<std::string_view> Split(const std::string_view data, const char delimiter) {
+			std::vector<std::string_view> tokens;
+
+			for (std::size_t i = 0, j = 0; j != std::string_view::npos; i = j + 1) {
+				if (j = data.find_first_of(delimiter, i); i != j) {
+					tokens.push_back(data.substr(i, j - i));
+				}
 			}
-			return element;
-		}
-
-		static std::vector<std::string> Split(std::iostream& line_stream, const char delimiter) {
-			std::vector<std::string> tokens;
-
-			for (std::string token;
-				std::getline(line_stream, token, delimiter);
-				tokens.push_back(std::move(token))) {}
 
 			return tokens;
 		}
 
-		static std::vector<std::string> Split(const std::string& line, const char delimiter) {
-			std::stringstream line_stream{line};
-			return Split(line_stream, delimiter);
+		template <typename T> static T ParseToken(const std::string_view token) {
+			T element;
+			if constexpr (std::is_same<T, bool>::value) {
+				std::istringstream{token.data()} >> std::boolalpha >> element;
+			}
+			else {
+				std::istringstream{token.data()} >> element;
+			}
+			return element;
 		}
 	};
 
@@ -51,7 +48,8 @@ namespace csv {
 					using ActualTupleElementType = typename std::tuple_element<CurrentIndex, TupleType>::type;
 					if constexpr (std::is_same<TupleElementType, ActualTupleElementType>::value) {
 						return std::get<CurrentIndex>(tuple);
-					} else {
+					}
+					else {
 						throw std::runtime_error{"Tuple element type mismatch"};
 					}
 				}
@@ -67,7 +65,7 @@ namespace csv {
 		};
 
 	public:
-		explicit Csv(const std::string& data) : elements_{ParseData(data)} {}
+		explicit Csv(const std::string_view data) : elements_{ParseData(data)} {}
 
 		template <typename ColumnType>
 		[[nodiscard]] const ColumnType& Get(const std::size_t row_index, const std::size_t column_index) const {
@@ -78,9 +76,8 @@ namespace csv {
 		}
 
 	private:
-		static std::vector<std::tuple<ColumnTypes...>> ParseData(const std::string& data) {
-			std::stringstream data_stream{data};
-			const auto lines = Split(data_stream, '\n');
+		static std::vector<std::tuple<ColumnTypes...>> ParseData(const std::string_view data) {
+			const auto lines = Split(data, '\n');
 			std::vector<std::tuple<ColumnTypes...>> elements;
 			elements.reserve(lines.size());
 
@@ -90,21 +87,21 @@ namespace csv {
 			return elements;
 		}
 
-		static std::tuple<ColumnTypes...> ParseLine(const std::string& line) {
+		static std::tuple<ColumnTypes...> ParseLine(const std::string_view line) {
 			const auto tokens = Split(line, ',');
 			return ParseTokens(TypeList<ColumnTypes...>{}, tokens, 0);
 		}
 
 		template <typename ColumnType, typename... Rest>
 		static std::tuple<ColumnType, Rest...> ParseTokens(
-			const TypeList<ColumnType, Rest...>&, const std::vector<std::string>& tokens, const std::size_t index) {
+			const TypeList<ColumnType, Rest...>&, const std::vector<std::string_view>& tokens, const std::size_t index) {
 
 			return std::tuple_cat(
 				std::make_tuple(ParseToken<ColumnType>(tokens[index])),
 				ParseTokens(TypeList<Rest...>{}, tokens, index + 1));
 		}
 
-		static std::tuple<> ParseTokens(const TypeList<>&, const std::vector<std::string>&, const std::size_t) {
+		static std::tuple<> ParseTokens(const TypeList<>&, const std::vector<std::string_view>&, const std::size_t) {
 			return {};
 		}
 
@@ -114,7 +111,7 @@ namespace csv {
 	template <typename T> class Csv<T> final : public CsvBase {
 
 	public:
-		explicit Csv(const std::string& data) : elements_{ParseData(data)} {}
+		explicit Csv(const std::string_view data) : elements_{ParseData(data)} {}
 
 		[[nodiscard]] const T& Get(const std::size_t row_index, const std::size_t column_index) const {
 			if (row_index >= elements_.size() || column_index >= elements_[row_index].size()) {
@@ -124,9 +121,8 @@ namespace csv {
 		}
 
 	private:
-		static std::vector<std::vector<T>> ParseData(const std::string& data) {
-			std::stringstream data_stream{data};
-			const auto lines = Split(data_stream, '\n');
+		static std::vector<std::vector<T>> ParseData(const std::string_view data) {
+			const auto lines = Split(data, '\n');
 			std::vector<std::vector<T>> elements;
 			elements.reserve(lines.size());
 
@@ -136,7 +132,7 @@ namespace csv {
 			return elements;
 		}
 
-		static std::vector<T> ParseLine(const std::string& line) {
+		static std::vector<T> ParseLine(const std::string_view line) {
 			const auto tokens = Split(line, ',');
 			std::vector<T> values;
 			values.reserve(tokens.size());

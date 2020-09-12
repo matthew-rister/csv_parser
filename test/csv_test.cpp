@@ -9,7 +9,7 @@ using namespace csv;
 TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 
 	SECTION("Parsing an empty string does not throw an exception") {
-		std::string data;
+		const std::string data;
 		REQUIRE_NOTHROW(Csv<int32_t>{data});
 	}
 
@@ -41,7 +41,7 @@ TEST_CASE("CSV parsing with homogeneous data", "[csv]") {
 TEST_CASE("CSV parsing with heterogeneous data") {
 
 	SECTION("Parsing an empty string does not throw an exception") {
-		std::string data;
+		const std::string data;
 		REQUIRE_NOTHROW(Csv<>{data});
 	}
 
